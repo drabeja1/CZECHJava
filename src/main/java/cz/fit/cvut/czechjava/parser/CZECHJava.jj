@@ -1,0 +1,873 @@
+/* Copyright (c) 2006, Sun Microsystems, Inc.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
+options {
+  MULTI=true;
+  JAVA_UNICODE_ESCAPE = true;
+  //NODE_EXTENDS="CZECHNode";
+  TRACK_TOKENS=true;
+  STATIC = false;
+}
+
+PARSER_BEGIN(CZECHJavaParser)
+
+package cz.fit.cvut.czechjava.Parser;
+
+public class CZECHJavaParser {
+
+    public Node rootNode() {
+      return jjtree.rootNode();
+    }
+
+}
+
+PARSER_END(CZECHJavaParser)
+
+
+SKIP : /* WHITE SPACE */
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+SPECIAL_TOKEN : /* COMMENTS */
+{
+  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+
+
+TOKEN : /* RESERVED WORDS AND LITERALS */
+{
+<BEGIN: "startuj" >
+| < END: "konci" >
+| < ENDLINE: "proved" >
+| < CLASS: "trida" >
+| < EXTENDS: "dedic" >
+| < DECLARATION: "necht" >
+| < THROW: "vyhod" >
+| < THROWS: "vyhazuje" >
+| < SUPER: "rodic" >
+| < THIS: "toto" >
+| < VOID: "nic" >
+| < NULL: "nictam" >
+| < TRUE: "jetotak" >
+| < FALSE: "nenitotak" >
+| < NEW: "vytvor" >
+| < IF: "plati" >
+| < ELSEIF: "neboi" >
+| < ELSE: "nebo" >
+| < WHILE: "opakuj" >
+| < BREAK: "stuj" >
+| < CONTINUE: "jdidal" >
+//| < DO: "opakuj" >
+| < TRY: "kontroluj" >
+| < CATCH: "chytni" >
+| < FINALLY: "dodelej" >
+//| < PRINT: "pravit" >
+| < RETURN: "vrat" >
+| < STATIC: "nemenny" >
+| < NATIVE: "natyv" >
+| < INT: "cislo" >
+| < BOOLEAN: "jeto" >
+| < FLOAT: "desetinne" >
+| < CHAR: "pismenko" >
+
+
+| < DEBUG: "dechrobok" >
+//translate
+| < SWITCH: "switch" >
+| < CASE: "case" >
+| < _DEFAULT: "default" >
+| < FOR: "for" >
+| < INSTANCEOF: "instanceof" >
+
+
+//?
+| < IMPORT: "import" >
+
+
+
+
+
+//| < SHORT: "short" >
+
+
+
+
+}
+
+TOKEN : /* LITERALS */
+{
+  < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|
+  < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+
+TOKEN : /* SEPARATORS */
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < COMMA: "," >
+| < DOT: "." >
+}
+
+TOKEN : /* OPERATORS */
+{
+  < ASSIGN: "=" >
+| < GT: ">" >
+| < LT: "<" >
+| < BANG: "!" >
+| < EQ: "==" >
+| < LE: "<=" >
+| < GE: ">=" >
+| < NE: "!=" >
+| < SC_OR: "ci" >
+| < SC_AND: "aj" >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < STAR: "*" >
+| < SLASH: "/" >
+| < REM: "%" >
+
+}
+
+TOKEN : /* IDENTIFIERS */
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < #DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+
+
+
+/*****************************************
+ * THE JAVA LANGUAGE GRAMMAR STARTS HERE *
+ *****************************************/
+
+/*
+ * Program structuring syntax follows.
+ */
+
+
+void CompilationUnit():
+{}
+{
+  Begin()
+  ( ClassDeclaration())*
+  End()
+  <EOF>
+}
+
+void Begin() #void:
+{}
+{
+    "startuj" "proved"
+}
+
+void End() #void:
+{}
+{
+    "konci" "proved"
+}
+
+/*
+ * Declaration syntax follows.
+ */
+
+void ClassDeclaration() #Class:
+{ Token t; }
+{
+  "trida" t = <IDENTIFIER> {jjtThis.name = t.image;} [ "dedic" t = <IDENTIFIER> {jjtThis.extending = t.image;} ] /*[ "implements" NameList() ]*/
+  "{" ( ClassBodyDeclaration() )* "}"
+}
+
+void ClassBodyDeclaration() #void:
+{}
+{
+
+  //LOOKAHEAD( Name() "(" )
+  //ConstructorDeclaration()
+//|
+  //LOOKAHEAD( MethodDeclarationLookahead() )
+
+  LOOKAHEAD("necht")
+  FieldDeclaration()
+  |
+  MethodDeclaration()
+}
+
+// This production is to determine lookahead only.
+void MethodDeclarationLookahead() :
+{}
+{
+  ResultType() <IDENTIFIER> "("
+}
+
+/*void InterfaceDeclaration() :
+{}
+{
+  ( "abstract" | "public" )*
+  "interface" <IDENTIFIER> [ "extends" NameList() ]
+  "{" ( InterfaceMemberDeclaration() )* "}"
+}
+
+void InterfaceMemberDeclaration() :
+{}
+{
+  LOOKAHEAD( MethodDeclarationLookahead() )
+  MethodDeclaration()
+|
+  FieldDeclaration()
+}*/
+
+void FieldDeclaration() :
+{}
+{
+  "necht" Type() VariableDeclaratorId() ( "," VariableDeclaratorId() )* "proved"
+}
+
+void VariableDeclarator() :
+{}
+{
+  Name() [ "=" AdditiveExpression() ]
+}
+
+void VariableDeclaratorId() #Variable:
+{Token t;}
+{
+  t = <IDENTIFIER> {jjtThis.value = t.image;} ( "[" "]" )*
+}
+
+void VariableInitializer() :
+{}
+{
+  "{" [ VariableInitializer() ( LOOKAHEAD(2) "," VariableInitializer() )* ] [ "," ] "}"
+|
+  Expression()
+}
+
+void MethodDeclaration() :
+{}
+{
+  [ "nemenny" #Static]
+  [ "natyv" #Native]
+  MethodHeader()
+  ( Block() | "proved" )
+}
+
+void MethodHeader() #void:
+{}
+{
+    LOOKAHEAD(ResultType() <IDENTIFIER> "(")
+    ResultType() MethodDeclarator() [ "vyhazuje" NameList() ]
+    |
+    MethodDeclarator() [ "vyhazuje" NameList() ]
+}
+
+void MethodDeclarator() #Method:
+{Token t;}
+{
+  t = <IDENTIFIER> {jjtThis.value = t.image; } FormalParameters()
+}
+
+void FormalParameters() :
+{}
+{
+  "(" [ FormalParameter() ( "," FormalParameter() )* ] ")"
+}
+
+void FormalParameter() :
+{}
+{
+  Type() VariableDeclaratorId()
+}
+
+void ConstructorDeclaration() :
+{}
+{
+  <IDENTIFIER> FormalParameters() [ "vyhazuje" NameList() ]
+  "{" [ LOOKAHEAD(2) ExplicitConstructorInvocation() ] ( BlockStatement() )* "}"
+}
+
+void ExplicitConstructorInvocation() :
+{}
+{
+  "toto" Arguments() "proved"
+|
+  "rodic" Arguments() "proved"
+}
+
+
+
+
+/*
+ * Type, name and expression syntax follows.
+ */
+
+void Type():
+{}
+{
+  ( PrimitiveType() [ ArrayType() ] | Name() [ ArrayType() ] )
+}
+
+void ArrayType():
+{}
+{
+  "[" "]"
+}
+
+void PrimitiveType() #void:
+{}
+{
+"jeto" #Bool
+|
+"pismenko" #Char
+|
+ "cislo"  #Number
+|
+ "desetinne"  #Float
+
+}
+
+void ResultType() :
+{}
+{
+"nic"
+|
+  Type()
+}
+
+void Name() :
+{Token t;}
+{
+  t = <IDENTIFIER> {jjtThis.value = t.image; }
+}
+
+void NameList() :
+{}
+{
+  Name()
+  ( "," Name()
+  )*
+}
+
+
+/*
+ * Expression syntax follows.
+ */
+
+void Expression() :
+{}
+{
+  LOOKAHEAD( PrimaryExpression() "=" )
+  Assignment()
+|
+  ConditionalExpression()
+}
+
+void Assignment() :
+{}
+{
+  Assignee() "=" AdditiveExpression()
+}
+
+void Assignee():
+{}
+{
+    AssigneePrefix() ("." Name() | ArraySuffix() )*
+}
+
+void AssigneePrefix() #void:
+{}
+{
+  Name()
+|
+  "toto" #This
+|
+  "rodic" #Super /*"." <IDENTIFIER>*/
+}
+
+/*void AssigneeSuffix() :
+{Token t;}
+{
+  "." t = <IDENTIFIER> {jjtThis.value = t.image; }
+}*/
+
+
+
+void ConditionalExpression() :
+{}
+{
+  ConditionalOrExpression()
+}
+
+void ConditionalOrExpression() :
+{}
+{
+  ConditionalAndExpression() ( "ci" #OrOperator ConditionalAndExpression() )*
+}
+
+void ConditionalAndExpression() :
+{}
+{
+  EqualityExpression() ( "aj" #AndOperator EqualityExpression() )*
+}
+
+void EqualityExpression() :
+{}
+{
+  RelationalExpression() ( ( "==" #EqualOperator | "!=" #NotEqualOperator ) RelationalExpression() )*
+}
+
+/*void InstanceOfExpression() :
+{}
+{
+  RelationalExpression() [ "instanceof" Type() ]
+}*/
+
+void RelationalExpression() :
+{}
+{
+  AdditiveExpression() ( ( "<" #LessThanOperator | ">" #GreaterThanOperator | "<=" #LessThanOrEqualOperator | ">=" #GreaterThanOrEqualOperator ) AdditiveExpression() )*
+}
+
+
+
+void AdditiveExpression() :
+{}
+{
+  MultiplicativeExpression() (  ("+" #PlusOperator | "-" #MinusOperator ) MultiplicativeExpression() )*
+}
+
+
+
+void MultiplicativeExpression() :
+{}
+{
+  UnaryExpression() ( ( "*" #MultiplyOperator | "/" #DivideOperator | "%" #ModuloOperator ) UnaryExpression() )*
+}
+
+void UnaryExpression() :
+{}
+{
+  ( "+" | "-" #MinusOperator ) UnaryExpression()
+|
+  UnaryExpressionNotPlusMinus()
+}
+
+
+
+void UnaryExpressionNotPlusMinus() :
+{}
+{
+  ( "!" #NegationOperator ) UnaryExpression()
+|
+  PrimaryExpression()
+}
+
+void PrimaryExpression() :
+{}
+{
+  PrimaryPrefix() ( PrimarySuffix() )*
+}
+
+void PrimaryPrefix() :
+{}
+{
+  Literal()
+|
+  Name()
+|
+  "toto" #This
+|
+  "rodic" /*"." <IDENTIFIER>*/ #Super
+|
+  "(" Expression() ")"
+|
+  AllocationExpression()
+}
+
+void PrimarySuffix() :
+{Token t;}
+{
+  ArraySuffix()
+|
+  "." Name()
+|
+  Arguments()
+}
+
+void Literal() #void:
+{Token t;}
+{
+  t = <INTEGER_LITERAL>  {jjtThis.value = t.image; } #NumberLiteral
+|
+  t = <FLOATING_POINT_LITERAL>  {jjtThis.value = t.image; } #FloatLiteral
+|
+  t = <CHARACTER_LITERAL> {jjtThis.value = t.image; } #CharLiteral
+|
+  t = <STRING_LITERAL>  {jjtThis.value = t.image; } #StringLiteral
+|
+  BooleanLiteral()
+|
+  NullLiteral()
+}
+
+void BooleanLiteral() #void:
+{}
+{
+  "jetotak" #True
+|
+  "nenitotak" #False
+}
+
+void NullLiteral() :
+{}
+{
+  "nictam"
+}
+
+void Arguments():
+{}
+{
+  "(" [ ArgumentList() ] ")"
+}
+
+void ArgumentList() #void:
+{}
+{
+  Expression() ( "," Expression() )*
+}
+
+void AllocationExpression() :
+{}
+{
+  LOOKAHEAD(2)
+  "vytvor" PrimitiveType() ArraySuffix()
+|
+  "vytvor" Name()  (Arguments() | ArraySuffix())
+}
+
+/*
+ * The second LOOKAHEAD specification below is to parse to PrimarySuffix
+ * if there is an expression between the "[...]".
+ */
+void ArraySuffix() :
+{}
+{
+  "[" Expression() "]" /*)+ ( LOOKAHEAD(2) "[" "]" )* */
+}
+
+
+/*
+ * Statement syntax follows.
+ */
+
+void Statement() :
+{}
+{
+  LOOKAHEAD(2)
+ /* Block()
+|
+  EmptyStatement()
+|*/
+  StatementExpression() "proved"
+/*|
+  SwitchStatement()*/
+|
+  IfStatement()
+|
+  WhileStatement()
+|
+/*  DoStatement()
+|
+  ForStatement()
+|*/
+  BreakStatement()
+|
+  ContinueStatement()
+|
+  ReturnStatement()
+|
+/*  ThrowStatement()
+|
+  TryStatement()
+|*/
+/*  PrintStatement()
+|*/
+  DebugStatement()
+}
+
+
+void Block()  :
+{}
+{
+  "{" ( BlockStatement() )* "}"
+}
+
+void BlockStatement() #void:
+{}
+{
+  LOOKAHEAD("necht")
+  LocalVariableDeclaration() "proved"
+|
+  Statement()
+}
+
+void LocalVariableDeclaration() :
+{}
+{
+  "necht" Type() VariableDeclarator() ( "," VariableDeclarator() )*
+}
+
+void DebugStatement() :
+{}
+{
+  "dechrobok" "proved"
+}
+
+void EmptyStatement() :
+{}
+{
+  "proved"
+}
+
+void StatementExpression() :
+/*
+ * The last expansion of this production accepts more than the legal
+ * Java expansions for StatementExpression.
+ */
+{}
+{
+
+  LOOKAHEAD( PrimaryExpression() "=" )
+  Assignment()
+|
+  PrimaryExpression()
+}
+
+void SwitchStatement() :
+{}
+{
+  "switch" "(" Expression() ")" "{"
+    ( SwitchLabel() ( BlockStatement() )* )*
+  "}"
+}
+
+void SwitchLabel() :
+{}
+{
+  "case" Expression() ":"
+|
+  "default" ":"
+}
+
+void IfStatement() :
+/*
+ * The disambiguating algorithm of JavaCC automatically binds dangling
+ * else's to the innermost if statement.  The LOOKAHEAD specification
+ * is to tell JavaCC that we know what we are doing.
+ */
+{}
+{
+  "plati" "(" Expression() ")" Block() ( LOOKAHEAD(3) "neboi" "(" Expression() ")" Block() )* [ LOOKAHEAD(1) "nebo" Block() ]
+}
+
+void WhileStatement() :
+{}
+{
+  "opakuj" "(" Expression() ")" Block()
+}
+
+/*void DoStatement() :
+{}
+{
+  "opakuj" Statement() "dokavad" "(" Expression() ")" "proved"
+}
+
+void ForStatement() :
+{}
+{
+  "for" "(" [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ] ")" Statement()
+}
+
+void ForInit() :
+{}
+{
+  LOOKAHEAD( Type() <IDENTIFIER> )
+  LocalVariableDeclaration()
+|
+  StatementExpressionList()
+}*/
+
+void StatementExpressionList() :
+{}
+{
+  StatementExpression() ( "," StatementExpression() )*
+}
+
+void ForUpdate() :
+{}
+{
+  StatementExpressionList()
+}
+
+void BreakStatement() :
+{}
+{
+  "stuj" "proved"
+}
+
+void ContinueStatement() :
+{}
+{
+  "jdidal" "proved"
+}
+
+void ReturnStatement() :
+{}
+{
+  "vrat" [ Expression() ] "proved"
+}
+
+void ThrowStatement() :
+{}
+{
+  "vyhod" Expression() "proved"
+}
+
+
+void TryStatement() :
+/*
+ * Semantic check required here to make sure that at least one
+ * finally/catch is present.
+ */
+{}
+{
+  "kontroluj" Block()
+  ( "chytni" "(" FormalParameter() ")" Block() )*
+  [ "dodelej" Block() ]
+}
+
+/*void PrintStatement() :
+{}
+{
+  "pravit" Expression() "proved"
+}*/
