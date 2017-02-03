@@ -1,4 +1,4 @@
-package cz.fit.cvut.czechjava.interpreter.natives.io.File;
+package cz.fit.cvut.czechjava.interpreter.natives.io.file;
 
 import java.io.BufferedReader;
 import java.util.HashMap;

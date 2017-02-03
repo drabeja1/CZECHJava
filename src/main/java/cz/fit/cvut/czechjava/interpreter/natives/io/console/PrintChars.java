@@ -1,4 +1,4 @@
-package cz.fit.cvut.czechjava.interpreter.natives.io.Console;
+package cz.fit.cvut.czechjava.interpreter.natives.io.console;
 
 import cz.fit.cvut.czechjava.interpreter.Converter;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;

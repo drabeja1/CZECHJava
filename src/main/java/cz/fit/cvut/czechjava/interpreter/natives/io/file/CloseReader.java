@@ -1,4 +1,4 @@
-package cz.fit.cvut.czechjava.interpreter.natives.io.File;
+package cz.fit.cvut.czechjava.interpreter.natives.io.file;
 
 import cz.fit.cvut.czechjava.interpreter.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;

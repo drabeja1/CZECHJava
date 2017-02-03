@@ -1,4 +1,4 @@
-package cz.fit.cvut.czechjava.interpreter.natives.io.Console;
+package cz.fit.cvut.czechjava.interpreter.natives.io.console;
 
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.natives.Native;
@@ -8,22 +8,24 @@ import cz.fit.cvut.czechjava.interpreter.StackValue;
  *
  * @author Jakub
  */
-public class PrintFloat extends Native {
+public class PrintBool extends Native {
 
-    public PrintFloat(Heap heap) {
+    public PrintBool(Heap heap) {
         super(heap);
     }
 
     /**
      *
-     * @param args float
+     * @param args bool
      * @return
      */
     @Override
     public StackValue invoke(StackValue args[]) {
         StackValue arg = args[0];
-        float value = arg.floatValue();
-        System.out.println(value);
+        boolean value = arg.boolValue();
+
+        System.out.println(value == false ? "false" : "true");
+
         return null;
     }
 }

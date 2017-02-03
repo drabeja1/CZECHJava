@@ -1,4 +1,4 @@
-package cz.fit.cvut.czechjava.interpreter.natives.io.Console;
+package cz.fit.cvut.czechjava.interpreter.natives.io.console;
 
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.natives.Native;

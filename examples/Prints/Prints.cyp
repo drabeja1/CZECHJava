@@ -8,7 +8,7 @@ trida A {
     }
 
     HodnePismenek naText(){
-        necht CysloCele cele = vytvor CysloCele(joch.c) proved
+        necht CisloCele cele = vytvor CisloCele(toto.c) proved
         vrat cele.naHodnepismenek() proved
     }
 }
@@ -22,7 +22,7 @@ trida Udelatko {
         necht cislo i = 250 proved
         necht pismenko c = 'b' proved
         necht jeto b = fajne proved
-        necht A a = zrob A(1020) proved
+        necht A a = vytvor A(1020) proved
 
         Konzole.pis(text1.chacharNa(2)) proved
         Konzole.pis(text2.pridaj(dryst2)) proved
@@ -32,7 +32,7 @@ trida Udelatko {
         Konzole.pis(a) proved
         Konzole.pis(i) proved
         Konzole.pis(c) proved
-        Konzole.pis(b) pyprovedco
+        Konzole.pis(b) proved
     }
 
 }

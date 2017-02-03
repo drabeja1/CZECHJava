@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -30,7 +31,7 @@ public class CZECHJavaCompiler {
     protected Class currentClass;
     protected Method currentMethod;
     protected Mode mode;
-
+    
     //In precompilation we just go trough declarations
     public List<Class> precompile(Node node) throws CompilerException {
         this.mode = Mode.PRECOMPILE;
