@@ -1,6 +1,7 @@
 startuj proved
 
 trida CisloCele {
+
     necht cislo c proved
 
     CisloCele(cislo c) {
@@ -8,7 +9,7 @@ trida CisloCele {
     }
 
     nemenny cislo preved(HodnePismenek c) {
-        vrat charArrayToInt(c.naHodnePismenek()) proved
+        vrat charArrayToInt(c.naPismenko()) proved
     }
 
     HodnePismenek naHodnePismenek() {

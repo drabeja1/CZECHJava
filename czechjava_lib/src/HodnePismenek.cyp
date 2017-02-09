@@ -6,7 +6,7 @@ trida HodnePismenek {
     necht cislo delka proved
     necht cislo kapacita proved
 
-    HodnePismenek hodnePismenek(pismenko[] pismenka) {
+    HodnePismenek HodnePismenek(pismenko[] pismenka) {
         toto.delka = Pole.velikost(pismenka) proved
         toto.pismenkoi = pismenka proved
         vrat toto proved
@@ -63,7 +63,7 @@ trida HodnePismenek {
 
         opakuj (i < toto.delka) {
             plati (toto.pismenkoi[i] == znak) {
-                casti[pocet] = vytvor HodnePismenek(baufr.naPismenka()) proved
+                casti[pocet] = vytvor HodnePismenek(bufr.naPismenko()) proved
                 pocet = pocet + 1 proved
                 // reset
                 bufr.vyprazdni() proved
@@ -74,7 +74,7 @@ trida HodnePismenek {
        }
 
        plati (bufr.pocet > 0){
-            casti[pocet] = vytvor HodnePismenek(bufr.naPismenka()) proved
+            casti[pocet] = vytvor HodnePismenek(bufr.naPismenko()) proved
        }
 
        vrat casti proved
@@ -96,7 +96,7 @@ trida HodnePismenek {
         bufr.pridej(znak) proved
 
 
-        necht HodnePismenek novyHodnePismenek = vytvor HodnePismenek(bufr.napismenko()) proved
+        necht HodnePismenek novyHodnePismenek = vytvor HodnePismenek(bufr.naPismenko()) proved
         vrat novyHodnePismenek proved
     }
 
@@ -119,7 +119,7 @@ trida HodnePismenek {
             i = i + 1 proved
         }
 
-        necht HodnePismenek novyHodnePismenek = vytvor HodnePismenek(bufr.naHodnePismenek()) proved
+        necht HodnePismenek novyHodnePismenek = vytvor HodnePismenek(bufr.naPismenko()) proved
         vrat novyHodnePismenek proved
     }
 }

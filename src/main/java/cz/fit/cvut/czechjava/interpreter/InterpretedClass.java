@@ -30,6 +30,7 @@ public class InterpretedClass extends Class {
         this.classPoolAddress = classPoolAddress;
     }
 
+    @Override
     public InterpretedMethod lookupMethod(String descriptor, ClassPool classPool) throws LookupException {
         return (InterpretedMethod) super.lookupMethod(descriptor, classPool);
     }

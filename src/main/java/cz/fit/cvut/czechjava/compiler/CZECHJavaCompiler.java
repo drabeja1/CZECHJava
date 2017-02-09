@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -18,13 +17,13 @@ import java.util.Set;
  */
 public class CZECHJavaCompiler {
 
-    enum Mode {
+    protected enum Mode {
         PRECOMPILE, COMPILE
     }
 
-    final String THIS_VARIABLE = "toto";
-    final String STRING_CLASS = Types.String().toString();
-    final String BASE_OBJECT_CLASS = "Perpetummobile";
+    private final static String THIS_VARIABLE = "toto";
+    private final static String STRING_CLASS = Types.String().toString();
+    private final static String BASE_OBJECT_CLASS = "perpetummobile";
 
     protected ConstantPool constantPool;
     protected ClassPool classPool;
@@ -232,7 +231,7 @@ public class CZECHJavaCompiler {
     protected void methodDeclaration(ASTMethodDeclaration node, Class aClass) throws CompilerException {
         Type returnType = Types.Void();
         String name = null;
-        List<Type> args = new ArrayList<>();
+        List<Type> args;
         MethodCompilation compilation = new MethodCompilation();
 
         Set<Method.MethodFlag> flags = new HashSet<>();

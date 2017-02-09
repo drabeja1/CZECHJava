@@ -19,11 +19,6 @@ public class Debugger {
     static ConstantPool constantPool;
     final static int INDENTATION = 2;
 
-    /*public Debugger(Heap heap, ClassPool classPool, ConstantPool constantPool) {
-        this.heap = heap;
-        this.classPool = classPool;
-        this.constantPool = constantPool;
-    }*/
     public static void init(Heap heap, ClassPool classPool, ConstantPool constantPool) {
         Debugger.heap = heap;
         Debugger.classPool = classPool;
@@ -42,8 +37,6 @@ public class Debugger {
             HeapItem item = heap.load(reference);
             print(item, indent);
         }
-
-        System.out.println();
     }
 
     public static void print(HeapItem heapObj) {

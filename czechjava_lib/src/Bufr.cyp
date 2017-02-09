@@ -21,12 +21,12 @@ trida Bufr {
       toto.pocet = 0 proved
    }
 
-   pismenko[] naPismenka(){
+   pismenko[] naPismenko(){
        necht pismenko[] pismenka = vytvor pismenko[toto.pocet] proved
        necht cislo i = 0 proved
 
        plati (i < toto.pocet){
-          pismneka[i] = toto.bufr[i] proved
+          pismenka[i] = toto.bufr[i] proved
           i = i + 1 proved
        }
        vrat pismenka proved

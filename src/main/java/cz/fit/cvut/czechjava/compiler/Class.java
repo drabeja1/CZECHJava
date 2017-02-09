@@ -9,12 +9,16 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 /**
  * 
  * @author Jakub
  */
 public class Class {
+    
+    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     protected List<String> flags;
 
@@ -97,7 +101,7 @@ public class Class {
         return constantPool;
     }
 
-    public void setConstantPool(ConstantPool constantPool) {
+    public final void setConstantPool(ConstantPool constantPool) {
         this.constantPool = constantPool;
     }
 
@@ -130,10 +134,13 @@ public class Class {
 
         if (superClass != null) {
             try {
+                LOGGER.log(Priority.INFO, descriptor);
                 Method superMethod = superClass.lookupMethod(descriptor, classPool);
                 allMethods.add(superMethod);
             } catch (LookupException e) {
                 //Supress exception in super call
+                LOGGER.warn(e);
+                
             }
         }
 

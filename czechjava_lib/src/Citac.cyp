@@ -5,7 +5,7 @@ trida Citac {
    necht cislo readerAddress proved
 
    otevri(HodnePismenek jmeno) {
-      necht pismenko[] pismenka = jmeno.naHodnePismenek() proved
+      necht pismenko[] pismenka = jmeno.naPismenko() proved
       toto.readerAddress = openReader(pismenka) proved
    }
 

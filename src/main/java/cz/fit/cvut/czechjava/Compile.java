@@ -68,7 +68,7 @@ public class Compile {
 
         List<Node> rootNodeList = parse(filenames);
 
-        List<cz.fit.cvut.czechjava.compiler.Class> classList = new ArrayList<>();
+        List<Class> classList = new ArrayList<>();
         CZECHJavaCompiler compiler = new CZECHJavaCompiler();
 
         try {

@@ -2,12 +2,12 @@ startuj proved
 
 trida Konzole {
 
-    nemenny vypis(Bazmek b) {
+    nemenny vypis(Perpetummobile b) {
         plati (b == nictam) {
             Konzole.vypis("nictam") proved
         } nebo {
             necht HodnePismenek hodnePismenek = b.naHodnePismenek() proved
-            Konzola.vypis(dryst) proved
+            Konzole.vypis(hodnePismenek) proved
         }
     }
 
@@ -15,7 +15,7 @@ trida Konzole {
         plati (hodnePismenek == nictam){
             Konzole.vypis("nictam") proved
         } nebo {
-            necht pismenko[] pismenka = hodnePismenek.naHodnePismenek() proved
+            necht pismenko[] pismenka = hodnePismenek.naPismenko() proved
             Konzole.vypis(pismenka) proved
         }
     }
@@ -48,10 +48,10 @@ trida Konzole {
         }
     }
 
-    nemenny natyv print(chachar[] c) proved
-    nemenny natyv print(cyslo i) proved
-    nemenny natyv print(cyslo_desetinne i) proved
-    nemenny natyv print(chachar c) proved
+    nemenny natyv print(pismenko[] c) proved
+    nemenny natyv print(cislo i) proved
+    nemenny natyv print(desetinne i) proved
+    nemenny natyv print(pismenko c) proved
 
 }
 

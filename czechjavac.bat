@@ -1,0 +1,1 @@
+java -jar target/CZECHJava-1.0-SNAPSHOT.jar compile %*

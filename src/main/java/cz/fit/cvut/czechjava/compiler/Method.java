@@ -47,26 +47,31 @@ public class Method {
     }
 
     public Method(String descriptor) {
-        this.flags = new HashSet<>();
+        try {
 
-        int classIndex = descriptor.indexOf(".");
-        String methodPart = descriptor;
-        if (classIndex != -1) {
-            this.className = descriptor.substring(0, classIndex);
-            methodPart = descriptor.substring(classIndex + 1);
-        }
+            this.flags = new HashSet<>();
 
-        String[] parts = methodPart.split(":");
-        args = new ArrayList<>();
-        //TODO: Put real return type
-        returnType = Types.Void();
-
-        for (int i = 0; i < parts.length; i++) {
-            if (i == 0) {
-                name = parts[i];
-            } else {
-                args.add(Types.fromString(parts[i]));
+            int classIndex = descriptor.indexOf(".");
+            String methodPart = descriptor;
+            if (classIndex != -1) {
+                this.className = descriptor.substring(0, classIndex);
+                methodPart = descriptor.substring(classIndex + 1);
             }
+
+            String[] parts = methodPart.split(":");
+            args = new ArrayList<>();
+            //TODO: Put real return type
+            returnType = Types.Void();
+
+            for (int i = 0; i < parts.length; i++) {
+                if (i == 0) {
+                    name = parts[i];
+                } else {
+                    args.add(Types.fromString(parts[i]));
+                }
+            }
+        } catch (java.lang.StackOverflowError e) {
+            System.out.println("");
         }
     }
 

@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.type;
 
 public class NumberType extends Type {
 
-    public final static int size = 4;
+    public final static int SIZE = 4;
     static java.lang.String name = "cislo";
 
     @Override

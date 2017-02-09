@@ -22,20 +22,20 @@ import java.util.List;
  * 
  * @author Jakub
  */
-public class OSTRAJavaInterpreter {
+public class CZECHJavaInterpreter {
 
-    final String MAIN_CLASS_NAME = "ostrava";
-    final String MAIN_METHOD_NAME = "rynek";
-    final int END_RETURN_ADDRESS = -1;
+    private final static String MAIN_CLASS_NAME = "udelatko";
+    private final static String MAIN_METHOD_NAME = "provadej";
+    private final static int END_RETURN_ADDRESS = -1;
 
-    ClassPool classPool;
-    ConstantPool constantPool;
-    Stack stack;
-    GenerationHeap heap;
-    Instructions instructions;
-    Natives natives;
+    private final ClassPool classPool;
+    private final ConstantPool constantPool;
+    private final Stack stack;
+    private final GenerationHeap heap;
+    private final Instructions instructions;
+    private final Natives natives;
 
-    public OSTRAJavaInterpreter(List<Class> compiledClasses, int heap_size, int frame_number, int stack_size) throws InterpreterException, LookupException {
+    public CZECHJavaInterpreter(List<Class> compiledClasses, int heap_size, int frame_number, int stack_size) throws InterpreterException, LookupException {
         this.stack = new Stack(frame_number, stack_size);
         this.classPool = new ClassPool(compiledClasses);
 

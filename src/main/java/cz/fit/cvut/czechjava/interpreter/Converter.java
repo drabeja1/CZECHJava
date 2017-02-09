@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 public class Converter {
 
     public static float byteArrayToFloat(byte[] bytes, int from) {
-        return ByteBuffer.wrap(bytes, from, NumberType.size).getFloat();
+        return ByteBuffer.wrap(bytes, from, NumberType.SIZE).getFloat();
     }
 
     public static float byteArrayToFloat(byte[] bytes) {
@@ -25,7 +25,7 @@ public class Converter {
     }
 
     public static int byteArrayToInt(byte[] bytes, int from) {
-        return ByteBuffer.wrap(bytes, from, NumberType.size).getInt();
+        return ByteBuffer.wrap(bytes, from, NumberType.SIZE).getInt();
     }
 
     public static float stringToFloat(String floatString) {
@@ -41,11 +41,11 @@ public class Converter {
     }
 
     public static byte[] intToByteArray(int i) {
-        return ByteBuffer.allocate(NumberType.size).putInt(i).array();
+        return ByteBuffer.allocate(NumberType.SIZE).putInt(i).array();
     }
 
     public static byte[] floatToByteArray(float i) {
-        return ByteBuffer.allocate(FloatType.size).putFloat(i).array();
+        return ByteBuffer.allocate(FloatType.SIZE).putFloat(i).array();
     }
 
     public static char[] arrayToCharArray(Array array) {
@@ -79,10 +79,10 @@ public class Converter {
 
     public static int[] byteArrayToIntArray(byte[] bytes) {
 
-        int intArrayLength = bytes.length / NumberType.size;
+        int intArrayLength = bytes.length / NumberType.SIZE;
         int[] res = new int[intArrayLength];
         for (int i = 0; i < intArrayLength; i++) {
-            res[i] = byteArrayToInt(bytes, i * NumberType.size);
+            res[i] = byteArrayToInt(bytes, i * NumberType.SIZE);
         }
 
         return res;
@@ -90,10 +90,10 @@ public class Converter {
 
     public static float[] byteArrayToFloatArray(byte[] bytes) {
 
-        int floatArrayLength = bytes.length / FloatType.size;
+        int floatArrayLength = bytes.length / FloatType.SIZE;
         float[] res = new float[floatArrayLength];
         for (int i = 0; i < floatArrayLength; i++) {
-            res[i] = byteArrayToFloat(bytes, i * FloatType.size);
+            res[i] = byteArrayToFloat(bytes, i * FloatType.SIZE);
         }
 
         return res;

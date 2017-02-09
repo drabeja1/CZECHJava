@@ -55,11 +55,11 @@ trida Pole {
         vrat arraySize(pole) proved
     }
 
-    nemenny cislo velikost(cislo_desetinne[] pole){
+    nemenny cislo velikost(desetinne[] pole){
         vrat arraySize(pole) proved
     }
 
-    nemenny cislo velikost(chachar[] pole){
+    nemenny cislo velikost(pismenko[] pole){
         vrat arraySize(pole) proved
     }
 

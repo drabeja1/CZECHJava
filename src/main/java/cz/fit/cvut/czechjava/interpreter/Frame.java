@@ -9,7 +9,7 @@ import cz.fit.cvut.czechjava.type.NumberType;
  */
 public final class Frame extends ByteArrayWrapper {
 
-    final int RETURN_ADDRESS_SIZE = NumberType.size;
+    final int RETURN_ADDRESS_SIZE = NumberType.SIZE;
     final int LOCAL_VAR_BYTE_SIZE = 4;
 
     protected int maxSize;
