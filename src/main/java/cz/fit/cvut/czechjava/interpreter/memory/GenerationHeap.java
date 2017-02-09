@@ -46,14 +46,20 @@ public class GenerationHeap implements Heap {
         return tenureSize;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public StackValue allocObject(InterpretedClass objectClass) throws HeapOverflow {
-        Object object = new Object(objectClass);
-        return alloc(object);
+        return alloc(new Object(objectClass));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public StackValue allocArray(int size) throws HeapOverflow {
-        Array array = new Array(size);
-        return alloc(array);
+        return alloc(new Array(size));
     }
 
     public StackValue alloc(HeapItem obj) throws HeapOverflow {
@@ -69,6 +75,10 @@ public class GenerationHeap implements Heap {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Array loadArray(StackValue reference) {
         HeapItem obj = load(reference);
 
@@ -83,6 +93,10 @@ public class GenerationHeap implements Heap {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object loadObject(StackValue reference) {
         HeapItem obj = load(reference);
 
@@ -101,6 +115,10 @@ public class GenerationHeap implements Heap {
         return !eden.referenceIsOutOfBounds(reference);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public HeapItem load(StackValue reference) {
 
         if (isEdenReference(reference)) {
@@ -110,10 +128,18 @@ public class GenerationHeap implements Heap {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getSize() {
         return edenSize + tenureSize;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void dealloc(StackValue reference) {
         if (isEdenReference(reference)) {
             eden.dealloc(reference);
@@ -126,6 +152,10 @@ public class GenerationHeap implements Heap {
         garbageCollector.addDirtyLink(from, reference);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public GenerationCollector getGarbageCollector() {
         return garbageCollector;
     }
@@ -134,6 +164,9 @@ public class GenerationHeap implements Heap {
         this.garbageCollector = garbageCollector;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue[] getAllocated() {
         StackValue[] edenAllocated = eden.getAllocated();
@@ -148,6 +181,9 @@ public class GenerationHeap implements Heap {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "Eden: \n " + eden.toString() + " \n Tenure: \n " + tenure.toString();

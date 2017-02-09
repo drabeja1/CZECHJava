@@ -25,7 +25,8 @@ import cz.fit.cvut.czechjava.parser.ASTUnaryExpressionNotPlusMinus;
 import cz.fit.cvut.czechjava.parser.Node;
 
 /**
- * Created by tomaskohout on 11/21/15.
+ *
+ * @author Jakub
  */
 public class CompilerTypes {
 

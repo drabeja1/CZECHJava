@@ -3,7 +3,7 @@ package cz.fit.cvut.czechjava.compiler;
 import java.util.*;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class ByteCode {
@@ -42,7 +42,7 @@ public class ByteCode {
 
         int in = 0;
         for (Instruction i : instructions) {
-            sb.append(i + System.getProperty("line.separator"));
+            sb.append(i).append(System.getProperty("line.separator"));
             in++;
         }
 

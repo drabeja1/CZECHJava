@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class Instructions {

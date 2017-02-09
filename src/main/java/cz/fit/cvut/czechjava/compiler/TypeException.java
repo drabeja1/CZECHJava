@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.compiler;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class TypeException extends Exception {

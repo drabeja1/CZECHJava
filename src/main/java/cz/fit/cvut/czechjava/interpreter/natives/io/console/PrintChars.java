@@ -17,9 +17,7 @@ public class PrintChars extends Native {
     }
 
     /**
-     *
-     * @param args char[]
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public StackValue invoke(StackValue args[]) {

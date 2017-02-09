@@ -40,27 +40,27 @@ public final class Frame extends ByteArrayWrapper {
     }
 
     public void push(StackValue i) {
-        overflowCheck(StackValue.size);
+        overflowCheck(StackValue.SIZE);
         set(count, i);
-        count += StackValue.size;
+        count += StackValue.SIZE;
     }
 
     public StackValue pop() {
-        underflowCheck(StackValue.size);
-        StackValue value = get(count - StackValue.size);
-        count -= StackValue.size;
+        underflowCheck(StackValue.SIZE);
+        StackValue value = get(count - StackValue.SIZE);
+        count -= StackValue.SIZE;
         return value;
     }
 
     public void pushBytes(StackValue i) {
-        overflowCheck(StackValue.size);
+        overflowCheck(StackValue.SIZE);
         set(count, i);
-        count += StackValue.size;
+        count += StackValue.SIZE;
     }
 
     public StackValue popBytes() {
-        underflowCheck(StackValue.size);
-        count -= StackValue.size;
+        underflowCheck(StackValue.SIZE);
+        count -= StackValue.SIZE;
         return get(count);
     }
 

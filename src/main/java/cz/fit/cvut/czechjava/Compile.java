@@ -19,52 +19,59 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Jakub
  */
 public class Compile {
+    /**
+     * Logger
+     */
+    private static final Logger LOGGER = Logger.getLogger(Compile.class.getName());
 
-    public final static String COMPILED_LIBRARIES_DIRECTORY = "czechjava_lib/out/";
-    public final static String SOURCE_LIBRARIES_DIRECTORY = "czechjava_lib/src/";
+    private static Options prepareOptions() {
+        Option sourceOpt = new Option("s", "source", true, "Zdrojove soubory nebo slozka.");
+        sourceOpt.setRequired(true);
+        Option targetOpt = new Option("t", "target", true, "Slozka pro vygenerovani .trida soubrou. (volitelne)");
+        targetOpt.setOptionalArg(true);
 
-    final static String CLASS_TYPE_EXTENSION = "trida";
-
-    public static void printHelp() {
-        System.out.println("Pouziti: czechjava <moznosti> <zdrojove soubory nebo slozka>\n"
-                + "dale muzu byt: \n"
-                + "-d slozka pro vygenerovane .trida soubory \n");
+        Options options = new Options();
+        options.addOption(sourceOpt);
+        options.addOption(targetOpt);
+        return options;
     }
 
     public static void exec(String[] args) throws Exception {
-        if (args.length == 0) {
-            printHelp();
-            System.exit(0);
-        }
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        Options options = prepareOptions();
 
-        // zpracovani argumentu
-        List<String> filenames = new ArrayList<>(Arrays.asList(args));
+        List<String> filenames = new ArrayList<>();
         String outputDirectory = "./";
 
-        for (int i = 0; i < args.length - 1; i++) {
-            String param = args[i];
-            String value = args[i + 1];
+        try {
+            CommandLine cmd = parser.parse(options, args);
+            filenames.addAll(Arrays.asList(cmd.getOptionValues("source")));
 
-            if (param.equals("-d")) {
-                filenames.remove(i);
-                filenames.remove(i);
-                outputDirectory = value;
+            if (cmd.hasOption("target")) {
+                outputDirectory = cmd.getOptionValue("target");
             }
-        }
-
-        if (filenames.isEmpty()) {
-            printHelp();
-            System.exit(0);
+        } catch (NumberFormatException | org.apache.commons.cli.ParseException ex) {
+            LOGGER.fatal(ex);
+            formatter.printHelp("czechjavac", options);
+            System.exit(1);
         }
 
         //Add all libraries for type control (sources)
-        filenames.add(SOURCE_LIBRARIES_DIRECTORY);
+        filenames.add(Globals.SOURCE_LIBRARIES_DIRECTORY);
 
         List<Node> rootNodeList = parse(filenames);
 
@@ -100,7 +107,7 @@ public class Compile {
 
             //Generate files
             for (Class clazz : classList) {
-                Classfile.toFile(clazz, outputDir.getAbsolutePath() + "/" + clazz.getClassName() + "." + CLASS_TYPE_EXTENSION);
+                Classfile.toFile(clazz, outputDir.getAbsolutePath() + "/" + clazz.getClassName() + "." + Globals.CLASS_TYPE_EXTENSION);
             }
         } catch (CompilerException e) {
             System.out.println("compile error: " + e.getMessage());
@@ -123,7 +130,7 @@ public class Compile {
                 extension = dirFile.getName().substring(i + 1);
             }
 
-            if (extension.equals(Compile.CLASS_TYPE_EXTENSION)) {
+            if (extension.equals(Globals.CLASS_TYPE_EXTENSION)) {
                 dirFile.delete();
             }
 
@@ -131,14 +138,9 @@ public class Compile {
 
     }
 
-    protected static List<File> listAllFiles(List<String> filenames) {
+    protected static List<File> listAllFiles(List<String> fileNames) {
         List<File> files = new ArrayList<>();
-
-        for (String fileName : filenames) {
-            File file = new File(fileName);
-            files.addAll(getFilesRecursively(file));
-        }
-
+        fileNames.forEach(fileName -> files.addAll(getFilesRecursively(new File(fileName))));
         return files;
     }
 
@@ -148,7 +150,11 @@ public class Compile {
         if (file.isDirectory()) {
             File[] dirFiles = file.listFiles();
             for (File dirFile : dirFiles) {
-                files.addAll(getFilesRecursively(dirFile));
+                if (dirFile.getName().endsWith(Globals.SOURCE_TYPE_EXTENSION)) {
+                    files.addAll(getFilesRecursively(dirFile));
+                } else {
+                    // TO DO ... log 
+                }
             }
 
         } else {
@@ -188,7 +194,7 @@ public class Compile {
 
     public static List<Class> removeLibraries(List<Class> classList) throws IOException {
 
-        File directory = new File(COMPILED_LIBRARIES_DIRECTORY);
+        File directory = new File(Globals.COMPILED_LIBRARIES_DIRECTORY);
         File[] dirFiles = directory.listFiles();
         for (File dirFile : dirFiles) {
             String extension = "";
@@ -198,7 +204,7 @@ public class Compile {
                 extension = dirFile.getName().substring(i + 1);
             }
 
-            if (extension.equals(Compile.CLASS_TYPE_EXTENSION)) {
+            if (extension.equals(Globals.CLASS_TYPE_EXTENSION)) {
                 Class library = Classfile.fromFile(dirFile);
 
                 for (Iterator<Class> iter = classList.iterator(); iter.hasNext();) {
@@ -211,5 +217,9 @@ public class Compile {
         }
 
         return classList;
+    }
+
+    public static void main(String[] args) throws Exception {
+        exec(args);
     }
 }

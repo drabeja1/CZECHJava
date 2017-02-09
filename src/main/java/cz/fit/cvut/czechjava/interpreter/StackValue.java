@@ -15,7 +15,7 @@ public class StackValue extends ByteArrayWrapper {
     final int REDUCED_FLOAT_BIAS = 63;
     final int MANTISA_SIZE = 23;
 
-    public static final int size = 4;
+    public static final int SIZE = 4;
 
     public StackValue(byte[] bytes) {
         this.byteArray = bytes;
@@ -34,14 +34,14 @@ public class StackValue extends ByteArrayWrapper {
     }
 
     //Shifts integer by 1 so that the top bit signifies whether it's a pointer
-    protected byte[] integerToInnerRepresentation(int i, Type type) {
+    protected final byte[] integerToInnerRepresentation(int i, Type type) {
         int lastBit = (type == Type.Pointer) ? POINTER_LAST_BIT : 0;
         int pointer = i << 1 | lastBit;
         return Converter.intToByteArray(pointer);
     }
 
     //Shifts float by 1, but has to reduce exponent to make space in float
-    protected byte[] floatToInnerRepresentation(float f) {
+    protected final byte[] floatToInnerRepresentation(float f) {
         byte[] bytes = Converter.floatToByteArray(f);
 
         int i = Converter.byteArrayToInt(bytes);
@@ -119,7 +119,7 @@ public class StackValue extends ByteArrayWrapper {
     }
 
     public boolean boolValue() {
-        return intValue() == 0 ? false : true;
+        return intValue() != 0;
     }
 
     @Override
@@ -133,6 +133,9 @@ public class StackValue extends ByteArrayWrapper {
         return sb.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
 
@@ -144,6 +147,10 @@ public class StackValue extends ByteArrayWrapper {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int hashCode() {
         return Converter.byteArrayToInt(this.getBytes());
     }

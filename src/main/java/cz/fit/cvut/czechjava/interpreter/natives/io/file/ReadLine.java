@@ -20,6 +20,9 @@ public class ReadLine extends Native {
         super(heap);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue invoke(StackValue[] args) throws HeapOverflow, InterpreterException {
         int handle = args[0].intValue();

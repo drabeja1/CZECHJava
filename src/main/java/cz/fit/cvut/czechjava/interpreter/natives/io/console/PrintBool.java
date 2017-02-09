@@ -15,9 +15,7 @@ public class PrintBool extends Native {
     }
 
     /**
-     *
-     * @param args bool
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public StackValue invoke(StackValue args[]) {

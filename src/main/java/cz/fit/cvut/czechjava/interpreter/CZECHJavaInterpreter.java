@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import cz.fit.cvut.czechjava.Globals;
 import cz.fit.cvut.czechjava.compiler.Class;
 import cz.fit.cvut.czechjava.compiler.ConstantPool;
 import cz.fit.cvut.czechjava.compiler.Instruction;
@@ -19,13 +20,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class CZECHJavaInterpreter {
 
-    private final static String MAIN_CLASS_NAME = "udelatko";
-    private final static String MAIN_METHOD_NAME = "provadej";
     private final static int END_RETURN_ADDRESS = -1;
 
     private final ClassPool classPool;
@@ -57,19 +56,19 @@ public class CZECHJavaInterpreter {
         Method mainMethod = null;
 
         try {
-            mainClass = classPool.lookupClass(MAIN_CLASS_NAME);
+            mainClass = classPool.lookupClass(Globals.MAIN_CLASS_NAME);
         } catch (LookupException e) {
-            throw new InterpreterException("Main class not found. The name has to be '" + MAIN_CLASS_NAME + "'");
+            throw new InterpreterException("Main class not found. The name has to be '" + Globals.MAIN_CLASS_NAME + "'");
         }
 
         for (Method method : mainClass.getMethods()) {
-            if (method.getName().equals(MAIN_METHOD_NAME)) {
+            if (method.getName().equals(Globals.MAIN_METHOD_NAME)) {
                 mainMethod = method;
             }
         }
 
         if (mainMethod == null) {
-            throw new InterpreterException("Main method not found. The name has to be '" + MAIN_METHOD_NAME + "'");
+            throw new InterpreterException("Main method not found. The name has to be '" + Globals.MAIN_METHOD_NAME + "'");
         }
 
         StackValue objectPointer = heap.allocObject(mainClass);

@@ -21,6 +21,9 @@ public class OpenReader extends Native {
         super(heap);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue invoke(StackValue[] args) throws InterpreterException {
         StackValue charRef = args[0];

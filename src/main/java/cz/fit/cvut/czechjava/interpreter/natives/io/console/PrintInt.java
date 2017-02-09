@@ -15,9 +15,7 @@ public class PrintInt extends Native {
     }
 
     /**
-     *
-     * @param args int
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public StackValue invoke(StackValue args[]) {

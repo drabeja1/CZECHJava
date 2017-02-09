@@ -15,6 +15,9 @@ public class ReferenceArraySize extends ArraySize {
         super(heap);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue invoke(StackValue[] args) throws HeapOverflow, InterpreterException {
         return super.invoke(args);

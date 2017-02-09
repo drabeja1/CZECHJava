@@ -39,7 +39,7 @@ public abstract class GarbageCollector {
             }
 
             //There can also be references directly on stack
-            for (int j = frame.getStackOffset(); j < frame.getSize(); j += StackValue.size) {
+            for (int j = frame.getStackOffset(); j < frame.getSize(); j += StackValue.SIZE) {
                 StackValue reference = frame.get(j);
                 //Translate every value from stack if it's eden reference
                 if (reference.isPointer() && !reference.isNullPointer()) {

@@ -13,9 +13,9 @@ public abstract class ByteArrayWrapper {
     }
 
     public byte[] getBytes(int from) {
-        byte[] bytes = new byte[StackValue.size];
+        byte[] bytes = new byte[StackValue.SIZE];
 
-        for (int i = 0; i < StackValue.size; i++) {
+        for (int i = 0; i < StackValue.SIZE; i++) {
             bytes[i] = byteArray[i + from];
         }
 

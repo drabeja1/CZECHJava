@@ -20,27 +20,27 @@ trida Konzole {
         }
     }
 
-    nemenny vypis(cislo d){
+    nemenny vypis(cislo d) {
         // native call
         print(d) proved
     }
 
-    nemenny vypis(desetinne d){
+    nemenny vypis(desetinne d) {
         // native call
         print(d) proved
     }
 
-    nemenny vypis(pismenko[] c){
+    nemenny vypis(pismenko[] c) {
         // native call
         print(c) proved
     }
 
-    nemenny vypis(pismenko c){
+    nemenny vypis(pismenko c) {
         // native call
         print(c) proved
     }
 
-    nemenny vypis(jeto b){
+    nemenny vypis(jeto b) {
         plati (b == jetotak){
             Konzole.vypis("jetotak") proved
         } nebo {

@@ -14,6 +14,9 @@ public class LogInt extends Native {
         super(heap);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue invoke(StackValue[] args) {
         int value = args[0].intValue();

@@ -36,6 +36,9 @@ public class SimpleHeap implements Heap {
         this(size, 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public GarbageCollector getGarbageCollector() {
         return garbageCollector;
@@ -45,12 +48,18 @@ public class SimpleHeap implements Heap {
         this.garbageCollector = garbageCollector;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue allocObject(InterpretedClass objectClass) throws HeapOverflow {
         cz.fit.cvut.czechjava.interpreter.memory.Object object = new Object(objectClass);
         return alloc(object);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue allocArray(int size) throws HeapOverflow {
         Array array = new Array(size);
@@ -97,6 +106,9 @@ public class SimpleHeap implements Heap {
         return (i < 0 || i >= getSize());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Array loadArray(StackValue reference) {
         HeapItem obj = load(reference);
@@ -112,6 +124,9 @@ public class SimpleHeap implements Heap {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object loadObject(StackValue reference) {
         HeapItem obj = load(reference);
@@ -127,6 +142,9 @@ public class SimpleHeap implements Heap {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public HeapItem load(StackValue reference) {
         if (reference.isNullPointer()) {
@@ -142,11 +160,17 @@ public class SimpleHeap implements Heap {
         return objectArray[index];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getSize() {
         return size;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dealloc(StackValue address) {
         int index = referenceToIndex(address);
@@ -154,6 +178,9 @@ public class SimpleHeap implements Heap {
         emptyList.addFirst(index);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue[] getAllocated() {
         StackValue[] allocated = new StackValue[spaceUsed()];
@@ -172,6 +199,9 @@ public class SimpleHeap implements Heap {
         return allocated;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

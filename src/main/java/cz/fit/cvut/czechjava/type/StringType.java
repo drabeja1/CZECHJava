@@ -1,10 +1,10 @@
 package cz.fit.cvut.czechjava.type;
 
+import cz.fit.cvut.czechjava.Globals;
+
 public class StringType extends ReferenceType {
 
-    public static String name = "hodnepismenek";
-
     public StringType() {
-        super(name);
+        super(Globals.STRING_TYPE_NAME);
     }
 }

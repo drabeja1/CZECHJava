@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.type;
 
+import cz.fit.cvut.czechjava.Globals;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,27 +35,27 @@ public class Types {
     }
 
     public static BooleanType Boolean() {
-        return (BooleanType) getSingleton(BooleanType.name);
+        return (BooleanType) getSingleton(Globals.BOOLEAN_TYPE_NAME);
     }
 
     public static NumberType Number() {
-        return (NumberType) getSingleton(NumberType.name);
+        return (NumberType) getSingleton(Globals.NUMBER_TYPE_NAME);
     }
 
     public static CharType Char() {
-        return (CharType) getSingleton(CharType.name);
+        return (CharType) getSingleton(Globals.CHAR_TYPE_NAME);
     }
 
     public static FloatType Float() {
-        return (FloatType) getSingleton(FloatType.name);
+        return (FloatType) getSingleton(Globals.FLOAT_TYPE_NAME);
     }
 
     public static StringType String() {
-        return (StringType) getSingleton(StringType.name);
+        return (StringType) getSingleton(Globals.STRING_TYPE_NAME);
     }
 
     public static VoidType Void() {
-        return (VoidType) getSingleton(VoidType.name);
+        return (VoidType) getSingleton(Globals.VOID_TYPE_NAME);
     }
 
     public static ArrayType NumberArray() {

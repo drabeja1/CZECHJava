@@ -7,17 +7,22 @@ import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.memory.HeapItem;
 import cz.fit.cvut.czechjava.interpreter.memory.Object;
 import cz.fit.cvut.czechjava.type.Types;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Jakub
  */
 public class Debugger {
+    /**
+     * Logger
+     */
+    private static final Logger LOGGER = Logger.getLogger(Debugger.class.getName());
 
-    static Heap heap;
-    static ClassPool classPool;
-    static ConstantPool constantPool;
-    final static int INDENTATION = 2;
+    private static Heap heap;
+    private static ClassPool classPool;
+    private static ConstantPool constantPool;
+    private final static int INDENTATION = 2;
 
     public static void init(Heap heap, ClassPool classPool, ConstantPool constantPool) {
         Debugger.heap = heap;
@@ -65,7 +70,7 @@ public class Debugger {
             System.out.println("{" + clazz.getClassName() + "} = '" + new String(str) + "'");
 
         } catch (LookupException | InterpreterException e) {
-            e.printStackTrace();
+            LOGGER.equals(e);
         }
     }
 

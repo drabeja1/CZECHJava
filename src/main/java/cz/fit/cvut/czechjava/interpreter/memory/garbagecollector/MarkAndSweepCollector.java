@@ -17,14 +17,15 @@ import java.util.logging.Logger;
  */
 public class MarkAndSweepCollector extends GarbageCollector {
 
-    private static final Logger log = Logger.getLogger(MarkAndSweepCollector.class.getName());
-    SimpleHeap heap;
+    private static final Logger LOGGER = Logger.getLogger(MarkAndSweepCollector.class.getName());
+    private final SimpleHeap heap;
 
     public MarkAndSweepCollector(SimpleHeap heap) {
         super(heap);
         this.heap = heap;
     }
 
+    @Override
     public Set<StackValue> run(Set<StackValue> roots) {
 
         Set<StackValue> dirtyLinks = mark(roots);
@@ -36,13 +37,11 @@ public class MarkAndSweepCollector extends GarbageCollector {
     protected Set<StackValue> mark(Set<StackValue> roots) {
         Set<StackValue> dirtyLinks = new HashSet<>();
 
-        for (StackValue rootRef : roots) {
-
-            //We clean only stuff from this heap
+        roots.forEach(rootRef -> {
             if (!heap.referenceIsOutOfBounds(rootRef)) {
                 dirtyLinks.addAll(markObject(rootRef));
             }
-        }
+        });
 
         return dirtyLinks;
     }
@@ -82,7 +81,7 @@ public class MarkAndSweepCollector extends GarbageCollector {
 
     public void sweep() {
 
-        log.log(Level.FINE, "Collected: ");
+        LOGGER.info("Collected: ");
 
         for (int i = 0; i < heap.getSize(); i++) {
 
@@ -92,16 +91,13 @@ public class MarkAndSweepCollector extends GarbageCollector {
 
             if (obj != null) {
                 if (obj.getGCState() == State.Dead) {
-                    log.log(Level.FINE, reference + ", ");
+                    LOGGER.log(Level.INFO, "{0}, ", reference);
                     heap.dealloc(reference);
                 } else {
                     //Reset all to dead state
                     obj.setGCState(State.Dead);
                 }
             }
-
         }
-
     }
-
 }

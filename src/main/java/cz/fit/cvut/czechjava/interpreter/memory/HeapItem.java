@@ -25,6 +25,9 @@ public abstract class HeapItem extends ByteArrayWrapper {
         return (b == 1) ? State.Live : State.Dead;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "GC: " + getGCState();

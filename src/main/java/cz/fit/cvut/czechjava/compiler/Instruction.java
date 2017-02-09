@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class Instruction {
+
     protected InstructionSet instruction;
     protected List<Integer> operands;
 
@@ -16,20 +17,20 @@ public class Instruction {
         this.operands = new ArrayList<>();
     }
 
-    public Instruction(InstructionSet instruction,int operand){
+    public Instruction(InstructionSet instruction, int operand) {
         this.instruction = instruction;
         this.operands = new ArrayList<>();
         this.operands.add(operand);
     }
 
-    public Instruction(InstructionSet instruction,int operand1, int operand2){
+    public Instruction(InstructionSet instruction, int operand1, int operand2) {
         this.instruction = instruction;
         this.operands = new ArrayList<>();
         this.operands.add(operand1);
         this.operands.add(operand2);
     }
 
-    public Instruction(InstructionSet instruction, List<Integer> operands){
+    public Instruction(InstructionSet instruction, List<Integer> operands) {
         this.instruction = instruction;
         this.operands = operands;
     }
@@ -39,7 +40,7 @@ public class Instruction {
         this.instruction = InstructionSet.fromString(parts[0]);
         this.operands = new ArrayList<>();
 
-        for (int i=1; i<parts.length;i++){
+        for (int i = 1; i < parts.length; i++) {
             operands.add(Integer.parseInt(parts[i]));
         }
     }
@@ -47,6 +48,7 @@ public class Instruction {
     public List<Integer> getOperands() {
         return operands;
     }
+
     public int getOperand(int index) {
         return operands.get(index);
     }
@@ -55,7 +57,7 @@ public class Instruction {
         this.operands = operands;
     }
 
-    public void setOperand(int index, int value){
+    public void setOperand(int index, int value) {
         this.operands.set(index, value);
     }
 
@@ -70,7 +72,7 @@ public class Instruction {
     public void invert() throws CompilerException {
         InstructionSet newInst;
 
-        switch (instruction){
+        switch (instruction) {
             case IfCompareEqualInteger:
                 newInst = InstructionSet.IfCompareNotEqualInteger;
                 break;
@@ -110,7 +112,7 @@ public class Instruction {
                 break;
 
             default:
-                    throw new CompilerException("Not supported invert operation");
+                throw new CompilerException("Not supported invert operation");
 
         }
 

@@ -9,10 +9,9 @@ import cz.fit.cvut.czechjava.interpreter.StackValue;
  */
 public class Array extends HeapItem {
 
-    final int ITEM_SIZE = StackValue.size;
-    final int HEADER_SIZE = GC_STATE_SIZE;
-
-    int capacity;
+    private final static int ITEM_SIZE = StackValue.SIZE;
+    private final int HEADER_SIZE = GC_STATE_SIZE;
+    private final int capacity;
 
     public Array(int size) {
 
@@ -41,25 +40,17 @@ public class Array extends HeapItem {
         return this.capacity;
     }
 
-    /*public byte[] getItemsBytes(){
-        byte[] bytes = new byte[getSize()*ITEM_SIZE];
-        for (int i = 0; i<getSize(); i+=1){
-             byte[] value = get(i).getValue();
-             for (int j = 0; i<getSize(); i+=1) {
-
-             }
-        }
-
-        return bytes;
-    }*/
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(super.toString() + "\n");
+        sb.append(super.toString()).append("\n");
 
         for (int i = 0; i < capacity; i++) {
-            sb.append(get(i) + " ");
+            sb.append(get(i)).append(" ");
         }
 
         return sb.toString();

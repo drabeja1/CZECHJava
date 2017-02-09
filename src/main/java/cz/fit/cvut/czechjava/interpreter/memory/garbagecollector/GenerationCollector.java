@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -24,10 +23,13 @@ import java.util.logging.Logger;
  */
 public class GenerationCollector extends GarbageCollector {
 
-    private static final Logger log = Logger.getLogger(GenerationCollector.class.getName());
+    /**
+     * Logger
+     */
+    private static final Logger LOGGER = Logger.getLogger(GenerationCollector.class.getName());
 
-    GenerationHeap heap;
-    Stack stack;
+    private final GenerationHeap heap;
+    private final Stack stack;
 
     //Maximum size is edenSize
     List<DirtyLink> generationDirtyLinks;
@@ -40,17 +42,20 @@ public class GenerationCollector extends GarbageCollector {
         generationDirtyLinks = new ArrayList<>();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<StackValue> run(Set<StackValue> roots) throws HeapOverflow {
 
         //Debugger.print(heap);
-        log.log(Level.FINE, "Collecting Eden");
+        LOGGER.info("Collecting Eden");
         Set<StackValue> stackRoots = GarbageCollector.getRootsFromStack(stack);
         Set<StackValue> tenureDirtyLinks = collect(heap.getEden(), stackRoots, dirtyLinksToRoots());
 
         //if there is not enough space in tenure, clean it
         if (tenureOutOfSpace()) {
-            log.log(Level.FINE, "Collecting tenure");
+            LOGGER.info("Collecting tenure");
             collect(heap.getTenure(), stackRoots, tenureDirtyLinks);
 
             //If still full - overflow
@@ -86,12 +91,12 @@ public class GenerationCollector extends GarbageCollector {
 
     protected Set<StackValue> dirtyLinksToRoots() {
         Set<StackValue> roots = new HashSet<>();
-        log.log(Level.FINE, "Eden dirty links: ");
+        LOGGER.info("Eden dirty links: ");
 
-        for (DirtyLink link : generationDirtyLinks) {
-            log.log(Level.FINE, link.getFrom() + "~" + link.getReference() + ", ");
+        generationDirtyLinks.forEach(link -> {
+            LOGGER.info(link.getFrom() + "~" + link.getReference() + ", ");
             roots.add(link.getReference());
-        }
+        });
 
         return roots;
     }
@@ -101,11 +106,11 @@ public class GenerationCollector extends GarbageCollector {
     }
 
     protected Set<StackValue> collect(SimpleHeap heapToCollect, Set<StackValue> stackRoots, Set<StackValue> dirtyLinks) throws HeapOverflow {
-        log.log(Level.FINE, "Roots: " + stackRoots);
-        log.log(Level.FINE, "Dirty links: " + dirtyLinks);
+        LOGGER.info("Roots: " + stackRoots);
+        LOGGER.info("Dirty links: " + dirtyLinks);
 
         //Run eden garbage collection on stack roots
-        Set<StackValue> roots = new HashSet<StackValue>();
+        Set<StackValue> roots = new HashSet<>();
         roots.addAll(stackRoots);
         roots.addAll(dirtyLinks);
 
@@ -114,16 +119,15 @@ public class GenerationCollector extends GarbageCollector {
 
         int collected = used - heapToCollect.spaceUsed();
 
-        log.log(Level.FINE, "Collected " + collected + " items");
+        LOGGER.info("Collected " + collected + " items");
 
         return heapDirtyLinks;
     }
 
     protected void moveEdenToTenure() throws HeapOverflow {
-
         StackValue[] referenceMap = new StackValue[heap.getEdenSize()];
 
-        log.log(Level.FINE, "Moving to tenure");
+        LOGGER.info("Moving to tenure");
 
         for (int i = 0; i < heap.getEdenSize(); i++) {
             StackValue oldReference = heap.getEden().indexToReference(i);
@@ -133,19 +137,19 @@ public class GenerationCollector extends GarbageCollector {
                 //Passing as reference, no need to deep copy
                 StackValue newReference = heap.getTenure().alloc(obj);
                 referenceMap[heap.getEden().referenceToIndex(oldReference)] = newReference;
-                log.log(Level.FINE, oldReference + ", ");
+                LOGGER.info(oldReference + ", ");
 
                 heap.getEden().dealloc(oldReference);
             }
         }
 
-        log.log(Level.FINE, "Translating eden");
+        LOGGER.info("Translating eden");
         translateReferencesFromEden(referenceMap);
 
-        log.log(Level.FINE, "Translating stack");
+        LOGGER.info("Translating stack");
         translateReferencesOnStack(referenceMap);
 
-        log.log(Level.FINE, "Translating dirty links");
+        LOGGER.info("Translating dirty links");
         translateDirtyReferences(referenceMap);
     }
 
@@ -197,26 +201,23 @@ public class GenerationCollector extends GarbageCollector {
     }
 
     protected void translateDirtyReferences(StackValue[] referenceMap) {
-        for (DirtyLink link : generationDirtyLinks) {
+        generationDirtyLinks.forEach(link -> {
             HeapItem obj = heap.getTenure().load(link.getFrom());
-            log.log(Level.FINE, link.getFrom() + "~" + link.getReference());
+            LOGGER.info(link.getFrom() + "~" + link.getReference());
 
-            if (obj == null) {
-                continue;
+            if (obj != null) {
+                if (obj instanceof Object) {
+                    translateReferencesInObject((Object) obj, referenceMap);
+                } else {
+                    translateReferencesInArray((Array) obj, referenceMap);
+                }
             }
-            if (obj instanceof Object) {
-                translateReferencesInObject((Object) obj, referenceMap);
-            } else {
-                translateReferencesInArray((Array) obj, referenceMap);
-            }
-        }
-
-        return;
+        });
     }
 
     protected StackValue translateReference(StackValue reference, StackValue[] referenceMap) {
         StackValue translated = referenceMap[heap.getEden().referenceToIndex(reference)];
-        log.log(Level.FINE, reference + "->" + translated);
+        LOGGER.info(reference + "->" + translated);
         return translated;
     }
 
@@ -234,7 +235,7 @@ public class GenerationCollector extends GarbageCollector {
             }
 
             //There can also be references directly on stack
-            for (int j = frame.getStackOffset(); j < frame.getSize(); j += StackValue.size) {
+            for (int j = frame.getStackOffset(); j < frame.getSize(); j += StackValue.SIZE) {
                 StackValue reference = frame.get(j);
                 //Translate every value from stack if it's eden reference
                 if (reference.isPointer() && !reference.isNullPointer() && heap.isEdenReference(reference)) {

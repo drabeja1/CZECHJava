@@ -17,6 +17,9 @@ public class IntToCharArray extends Native {
         super(heap);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StackValue invoke(StackValue[] args) throws HeapOverflow, InterpreterException {
         int number = args[0].intValue();

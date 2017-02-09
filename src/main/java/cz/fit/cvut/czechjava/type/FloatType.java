@@ -1,12 +1,16 @@
 package cz.fit.cvut.czechjava.type;
 
+import cz.fit.cvut.czechjava.Globals;
+
 public class FloatType extends Type {
 
     public static final int SIZE = 4;
-    static java.lang.String name = "desetinne";
-
+    
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public String toString() {
-        return name;
+        return Globals.FLOAT_TYPE_NAME;
     }
 }

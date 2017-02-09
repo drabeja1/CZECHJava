@@ -15,9 +15,7 @@ public class PrintFloat extends Native {
     }
 
     /**
-     *
-     * @param args float
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public StackValue invoke(StackValue args[]) {

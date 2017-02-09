@@ -6,7 +6,7 @@ import cz.fit.cvut.czechjava.type.Types;
 import java.util.List;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class Field {
@@ -50,6 +50,9 @@ public class Field {
         this.flags = flags;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return getName() + ":" + getType();

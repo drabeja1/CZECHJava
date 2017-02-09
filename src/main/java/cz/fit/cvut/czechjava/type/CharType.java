@@ -1,12 +1,13 @@
 package cz.fit.cvut.czechjava.type;
 
+import cz.fit.cvut.czechjava.Globals;
+
 public class CharType extends Type {
 
-    static int size = 4;
-    static java.lang.String name = "pismenko";
+    public static int size = 4;
 
     @Override
     public String toString() {
-        return name;
+        return Globals.CHAR_TYPE_NAME;
     }
 }

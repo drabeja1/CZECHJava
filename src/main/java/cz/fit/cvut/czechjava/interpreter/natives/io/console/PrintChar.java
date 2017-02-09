@@ -5,7 +5,7 @@ import cz.fit.cvut.czechjava.interpreter.natives.Native;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class PrintChar extends Native {
@@ -15,9 +15,7 @@ public class PrintChar extends Native {
     }
 
     /**
-     * 
-     * @param args char
-     * @return 
+     * {@inheritDoc}
      */
     @Override
     public StackValue invoke(StackValue[] args) {

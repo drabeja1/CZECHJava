@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by tomaskohout on 11/21/15.
+ *
+ * @author Jakub
  */
 public class ConstantPool {
 

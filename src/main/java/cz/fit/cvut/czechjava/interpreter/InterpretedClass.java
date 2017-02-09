@@ -13,13 +13,10 @@ public class InterpretedClass extends Class {
     public InterpretedClass(Class c) {
         super(c.getClassName(), c.getSuperName());
 
-        //Copy
         c.getFields().forEach(field -> this.addField(field));
-
         c.getMethods().forEach(method -> this.addMethod(new InterpretedMethod(method)));
         setConstantPool(c.getConstantPool());
 
-        //TODO: Copy flags
     }
 
     public int getClassPoolAddress() {

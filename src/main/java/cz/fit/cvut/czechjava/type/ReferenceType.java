@@ -16,6 +16,9 @@ public class ReferenceType extends Type {
         this.className = className;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return this.className;

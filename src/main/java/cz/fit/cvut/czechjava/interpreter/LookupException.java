@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class LookupException extends Exception {

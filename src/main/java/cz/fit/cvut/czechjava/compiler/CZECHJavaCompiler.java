@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.compiler;
 
+import cz.fit.cvut.czechjava.Globals;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.interpreter.LookupException;
 import cz.fit.cvut.czechjava.parser.*;
@@ -21,16 +22,13 @@ public class CZECHJavaCompiler {
         PRECOMPILE, COMPILE
     }
 
-    private final static String THIS_VARIABLE = "toto";
     private final static String STRING_CLASS = Types.String().toString();
-    private final static String BASE_OBJECT_CLASS = "perpetummobile";
-
     protected ConstantPool constantPool;
     protected ClassPool classPool;
     protected Class currentClass;
     protected Method currentMethod;
     protected Mode mode;
-    
+
     //In precompilation we just go trough declarations
     public List<Class> precompile(Node node) throws CompilerException {
         this.mode = Mode.PRECOMPILE;
@@ -82,10 +80,10 @@ public class CZECHJavaCompiler {
         String extending = node.getExtending();
 
         if (extending == null) {
-            if (className.equals(BASE_OBJECT_CLASS)) {
+            if (className.equals(Globals.BASE_OBJECT_CLASS)) {
                 extending = null;
             } else {
-                extending = BASE_OBJECT_CLASS;
+                extending = Globals.BASE_OBJECT_CLASS;
             }
         } else {
             extending = extending.toLowerCase();
@@ -148,10 +146,10 @@ public class CZECHJavaCompiler {
         MethodCompilation compilation = new MethodCompilation();
 
         //Add this variable
-        compilation.addLocalVariable(THIS_VARIABLE, classType);
+        compilation.addLocalVariable(Globals.THIS_VARIABLE, classType);
 
         //Get it's position
-        int thisPosition = compilation.getPositionOfLocalVariable(THIS_VARIABLE);
+        int thisPosition = compilation.getPositionOfLocalVariable(Globals.THIS_VARIABLE);
 
         String superClass = aClass.getSuperName();
 
@@ -263,7 +261,7 @@ public class CZECHJavaCompiler {
                 }
 
                 //Add This as first argument
-                compilation.addLocalVariable(THIS_VARIABLE, Types.Reference(aClass.getClassName()));
+                compilation.addLocalVariable(Globals.THIS_VARIABLE, Types.Reference(aClass.getClassName()));
 
                 //Add the rest of arguments
                 ASTFormalParameters params = (ASTFormalParameters) child.jjtGetChild(0);
@@ -1214,7 +1212,7 @@ public class CZECHJavaCompiler {
     }
 
     protected void thisReference(MethodCompilation compilation) {
-        int position = compilation.getPositionOfLocalVariable(THIS_VARIABLE);
+        int position = compilation.getPositionOfLocalVariable(Globals.THIS_VARIABLE);
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.LoadReference, position));
     }
 

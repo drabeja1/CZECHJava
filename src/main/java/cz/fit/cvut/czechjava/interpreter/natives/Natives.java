@@ -49,10 +49,6 @@ public class Natives {
         init();
     }
 
-    private List<Type> argsList(Type... types) {
-        return new ArrayList<>(Arrays.asList(types));
-    }
-
     private void addNative(String descriptor, Native implementation) {
         nativeClass.addMethod(new Method(descriptor));
         nativesMap.put(descriptor, implementation);

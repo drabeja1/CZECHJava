@@ -1,11 +1,14 @@
 package cz.fit.cvut.czechjava.type;
 
+import cz.fit.cvut.czechjava.Globals;
+
 public class VoidType extends Type {
 
-    static java.lang.String name = "nic";
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
-        return name;
+        return Globals.VOID_TYPE_NAME;
     }
 }

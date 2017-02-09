@@ -11,7 +11,7 @@ import cz.fit.cvut.czechjava.interpreter.StackValue;
 import java.util.Set;
 
 /**
- * 
+ *
  * @author Jakub
  */
 public class Object extends HeapItem {
