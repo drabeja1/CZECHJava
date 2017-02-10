@@ -1,8 +1,8 @@
 package cz.fit.cvut.czechjava.interpreter.memory;
 
 import cz.fit.cvut.czechjava.interpreter.InterpretedClass;
-import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.GenerationCollector;
-import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.MarkAndSweepCollector;
+import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl.GenerationCollector;
+import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl.MarkAndSweepCollector;
 import cz.fit.cvut.czechjava.interpreter.Stack;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
 

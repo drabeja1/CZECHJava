@@ -1,5 +1,8 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
+import com.oracle.truffle.api.nodes.RootNode;
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.Globals;
@@ -10,7 +13,7 @@ import cz.fit.cvut.czechjava.compiler.InstructionSet;
 import cz.fit.cvut.czechjava.compiler.Method;
 import cz.fit.cvut.czechjava.type.Type;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
-import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.GenerationCollector;
+import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl.GenerationCollector;
 import cz.fit.cvut.czechjava.interpreter.memory.GenerationHeap;
 import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
 import cz.fit.cvut.czechjava.interpreter.memory.Object;
@@ -20,13 +23,14 @@ import cz.fit.cvut.czechjava.type.Types;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Jakub
  */
-public class CZECHJavaInterpreter {
+public class CZECHJavaInterpreter extends RootNode {
 
     /**
      * Logger
@@ -41,12 +45,16 @@ public class CZECHJavaInterpreter {
     private final GenerationHeap heap;
     private final Instructions instructions;
     private final Natives natives;
+    private final List<String> arguments;
 
-    public CZECHJavaInterpreter(List<Class> compiledClasses, int heap_size, int frame_number, int stack_size) throws InterpreterException, LookupException {
-        this.stack = new Stack(frame_number, stack_size);
+    public CZECHJavaInterpreter(List<Class> compiledClasses, int heapSize, int frameNumber, int stackSize, List<String> arguments)
+            throws InterpreterException, LookupException {
+
+        this.arguments = arguments;
+        this.stack = new Stack(frameNumber, stackSize);
         this.classPool = new ClassPool(compiledClasses);
 
-        this.heap = new GenerationHeap((int) (heap_size * 0.1), (int) (heap_size * 0.9), stack);
+        this.heap = new GenerationHeap((int) (heapSize * 0.1), (int) (heapSize * 0.9), stack);
         GenerationCollector gc = new GenerationCollector(stack, heap);
         this.heap.setGarbageCollector(gc);
 
@@ -56,8 +64,23 @@ public class CZECHJavaInterpreter {
         Debugger.init(heap, classPool, constantPool);
     }
 
-    public void run(List<String> arguments) throws InterpreterException, HeapOverflow {
+    /**
+     * {@inheritDoc}
+     */
+    @ExplodeLoop
+    @Override
+    public Object execute(VirtualFrame frame) {
+        try {
+            run(arguments);
+        } catch (InterpreterException | HeapOverflow ex) {
+            LOGGER.fatal(ex);
+            throw new RuntimeException(ex);
+        }
 
+        return null;
+    }
+
+    public void run(List<String> arguments) throws InterpreterException, HeapOverflow {
         InterpretedClass mainClass = null;
         Method mainMethod = null;
 
@@ -662,5 +685,4 @@ public class CZECHJavaInterpreter {
         }
 
     }
-
 }

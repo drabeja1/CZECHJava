@@ -9,20 +9,18 @@ import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.State;
  */
 public abstract class HeapItem extends ByteArrayWrapper {
 
-    final int GC_STATE_SIZE = 1;
+    protected final static int GC_STATE_SIZE = 1;
 
     public final void setGCState(State state) {
-        byte b = 0;
-        if (state == State.Live) {
-            b = 1;
+        if (state.equals(State.Live)) {
+            byteArray[0] = 1;
+        } else {
+            byteArray[0] = 0;
         }
-
-        byteArray[0] = b;
     }
 
     public State getGCState() {
-        byte b = byteArray[0];
-        return (b == 1) ? State.Live : State.Dead;
+        return (byteArray[0] == 1) ? State.Live : State.Dead;
     }
 
     /**

@@ -137,7 +137,7 @@ public class Class {
                 allMethods.add(superMethod);
             } catch (LookupException e) {
                 // Supress exception in super call - logg it
-                LOGGER.warn(e);
+                //LOGGER.warn(e); // generuje prilis mnoho logu
             }
         }
 

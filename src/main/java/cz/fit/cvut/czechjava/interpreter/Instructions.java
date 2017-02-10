@@ -14,7 +14,7 @@ import java.util.List;
 public class Instructions {
 
     protected List<Instruction> instructionList;
-    protected InstructionIterator iterator;
+    private InstructionIterator iterator;
 
     public Instructions(ClassPool classPool) {
         this.instructionList = new ArrayList<>();

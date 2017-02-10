@@ -1,5 +1,7 @@
 package cz.fit.cvut.czechjava;
 
+import com.oracle.truffle.api.CallTarget;
+import com.oracle.truffle.api.Truffle;
 import cz.fit.cvut.czechjava.compiler.Classfile;
 import cz.fit.cvut.czechjava.interpreter.CZECHJavaInterpreter;
 import java.io.File;
@@ -88,8 +90,9 @@ public class Run {
         List<cz.fit.cvut.czechjava.compiler.Class> classList = loadClassfiles(directory);
         classList.addAll(librariesList);
 
-        CZECHJavaInterpreter interpreter = new CZECHJavaInterpreter(classList, heapSize, frameCount, stackSize);
-        interpreter.run(Arrays.asList(arguments));
+        CZECHJavaInterpreter interpreter = new CZECHJavaInterpreter(classList, heapSize, frameCount, stackSize, Arrays.asList(arguments));
+        CallTarget target = Truffle.getRuntime().createCallTarget(interpreter);
+        target.call();
     }
 
     public static List<cz.fit.cvut.czechjava.compiler.Class> loadLibraries() throws IOException {
@@ -105,7 +108,7 @@ public class Run {
             for (File dirFile : dirFiles) {
                 String extension = "";
                 int i = dirFile.getName().lastIndexOf('.');
-                
+
                 if (i > 0) {
                     extension = dirFile.getName().substring(i + 1);
                 }

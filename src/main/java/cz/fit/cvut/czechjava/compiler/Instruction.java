@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.compiler;
 
+import com.oracle.truffle.api.nodes.NodeInterface;
 import cz.fit.cvut.czechjava.compiler.exceptions.CompilerException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
  *
  * @author Jakub
  */
-public class Instruction {
+public class Instruction implements NodeInterface {
 
     protected InstructionSet instruction;
     protected List<Integer> operands;

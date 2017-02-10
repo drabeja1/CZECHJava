@@ -1,4 +1,4 @@
-package cz.fit.cvut.czechjava.interpreter.memory.garbagecollector;
+package cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl;
 
 import cz.fit.cvut.czechjava.interpreter.Frame;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
@@ -10,6 +10,7 @@ import cz.fit.cvut.czechjava.interpreter.memory.Object;
 import cz.fit.cvut.czechjava.interpreter.memory.SimpleHeap;
 import cz.fit.cvut.czechjava.interpreter.Stack;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
+import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.GarbageCollector;
 
 import java.util.ArrayList;
 import java.util.HashSet;

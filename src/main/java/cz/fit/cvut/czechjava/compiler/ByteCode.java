@@ -1,18 +1,21 @@
 package cz.fit.cvut.czechjava.compiler;
 
+import com.oracle.truffle.api.nodes.Node;
 import java.util.*;
 
 /**
  *
  * @author Jakub
  */
-public class ByteCode {
+public class ByteCode extends Node {
 
+    /**
+     * List of instructuons
+     */
     protected List<Instruction> instructions;
 
     public ByteCode() {
         instructions = new ArrayList<>();
-
     }
 
     public Instruction addInstruction(Instruction inst) {
@@ -20,7 +23,15 @@ public class ByteCode {
         return inst;
     }
 
+    /**
+     * 
+     * @param position
+     * @return instruction at position, or {@code null} 
+     */
     public Instruction getInstruction(int position) {
+        if (position < 0 || position >= instructions.size()) {
+            return null;
+        }
         return instructions.get(position);
     }
 
