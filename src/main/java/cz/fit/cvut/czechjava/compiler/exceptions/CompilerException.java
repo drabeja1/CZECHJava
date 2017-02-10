@@ -1,6 +1,7 @@
-package cz.fit.cvut.czechjava.compiler;
+package cz.fit.cvut.czechjava.compiler.exceptions;
 
 /**
+ * Compiler exception
  *
  * @author Jakub
  */

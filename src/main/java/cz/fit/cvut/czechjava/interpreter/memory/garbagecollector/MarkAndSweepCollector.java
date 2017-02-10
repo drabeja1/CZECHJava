@@ -21,7 +21,6 @@ public class MarkAndSweepCollector extends GarbageCollector {
     private final SimpleHeap heap;
 
     public MarkAndSweepCollector(SimpleHeap heap) {
-        super(heap);
         this.heap = heap;
     }
 

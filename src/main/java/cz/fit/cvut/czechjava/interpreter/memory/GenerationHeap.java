@@ -13,7 +13,6 @@ import cz.fit.cvut.czechjava.interpreter.StackValue;
 public class GenerationHeap implements Heap {
 
     protected SimpleHeap eden, tenure;
-
     protected int edenSize, tenureSize;
     protected GenerationCollector garbageCollector;
 

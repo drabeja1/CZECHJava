@@ -21,11 +21,11 @@ public class ConstantPool {
         constants = new LinkedHashSet<>();
     }
 
-    //Merge constants from all classes
+    // Merge constants from all classes
     public ConstantPool(ClassPool classPool) {
         constants = new LinkedHashSet<>();
 
-        //Go through all classes and methods and get constants
+        // Go through all classes and methods and get constants
         for (InterpretedClass c : classPool.getClasses()) {
             for (Method method : c.getMethods()) {
 

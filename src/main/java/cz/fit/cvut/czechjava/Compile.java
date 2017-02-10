@@ -5,7 +5,7 @@ import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.parser.Node;
 import cz.fit.cvut.czechjava.compiler.Class;
 import cz.fit.cvut.czechjava.compiler.Classfile;
-import cz.fit.cvut.czechjava.compiler.CompilerException;
+import cz.fit.cvut.czechjava.compiler.exceptions.CompilerException;
 import cz.fit.cvut.czechjava.parser.ASTCompilationUnit;
 import cz.fit.cvut.czechjava.parser.CZECHJavaParser;
 import cz.fit.cvut.czechjava.parser.ParseException;
@@ -32,11 +32,17 @@ import org.apache.log4j.Logger;
  * @author Jakub
  */
 public class Compile {
+
     /**
      * Logger
      */
     private static final Logger LOGGER = Logger.getLogger(Compile.class.getName());
 
+    /**
+     * Prepare arguments options
+     *
+     * @return
+     */
     private static Options prepareOptions() {
         Option sourceOpt = new Option("s", "source", true, "Zdrojove soubory nebo slozka.");
         sourceOpt.setRequired(true);
@@ -49,7 +55,14 @@ public class Compile {
         return options;
     }
 
+    /**
+     * Run compile
+     *
+     * @param args program arguments
+     * @throws Exception
+     */
     public static void exec(String[] args) throws Exception {
+        // perform args
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         Options options = prepareOptions();
@@ -70,7 +83,7 @@ public class Compile {
             System.exit(1);
         }
 
-        //Add all libraries for type control (sources)
+        // Add all libraries for type control (sources)
         filenames.add(Globals.SOURCE_LIBRARIES_DIRECTORY);
 
         List<Node> rootNodeList = parse(filenames);
@@ -79,12 +92,12 @@ public class Compile {
         CZECHJavaCompiler compiler = new CZECHJavaCompiler();
 
         try {
-            //First stage - precompilation
+            // First stage - PRECOMPULATION
             for (Node node : rootNodeList) {
                 classList.addAll(compiler.precompile(node));
             }
 
-            //Second stage - compilation
+            // Second stage - COMPILATION
             ClassPool classPool = new ClassPool(classList);
 
             classList.clear();
@@ -93,31 +106,37 @@ public class Compile {
                 classList.addAll(compiler.compile(node, classPool));
             }
 
-            //We don't want the libraries to be generated again
+            // We don't want the libraries to be generated again
             classList = removeLibraries(classList);
 
-            //Create output directory
+            // Create output directory
             File outputDir = new File(outputDirectory);
             if (!outputDir.exists()) {
                 outputDir.mkdirs();
             }
 
-            //Clean the directory
+            // Clean the directory
             removeClassfiles(outputDirectory);
 
-            //Generate files
+            // Generate files
             for (Class clazz : classList) {
                 Classfile.toFile(clazz, outputDir.getAbsolutePath() + "/" + clazz.getClassName() + "." + Globals.CLASS_TYPE_EXTENSION);
             }
         } catch (CompilerException e) {
+            LOGGER.fatal(e);
             System.out.println("compile error: " + e.getMessage());
         }
-
     }
 
+    /**
+     * Romve class files
+     *
+     * @param dir
+     */
     protected static void removeClassfiles(String dir) {
         File file = new File(dir);
         if (!file.isDirectory()) {
+            LOGGER.fatal(dir + " is not a directory");
             System.out.println(dir + " is not a directory");
             System.exit(0);
         }
@@ -138,12 +157,24 @@ public class Compile {
 
     }
 
+    /**
+     * Return all files to compile
+     *
+     * @param fileNames
+     * @return
+     */
     protected static List<File> listAllFiles(List<String> fileNames) {
         List<File> files = new ArrayList<>();
         fileNames.forEach(fileName -> files.addAll(getFilesRecursively(new File(fileName))));
         return files;
     }
 
+    /**
+     * If file is directory, return list of files, else return file
+     *
+     * @param file
+     * @return
+     */
     protected static List<File> getFilesRecursively(File file) {
         List<File> files = new ArrayList<>();
 
@@ -153,10 +184,9 @@ public class Compile {
                 if (dirFile.getName().endsWith(Globals.SOURCE_TYPE_EXTENSION)) {
                     files.addAll(getFilesRecursively(dirFile));
                 } else {
-                    // TO DO ... log 
+                    LOGGER.warn("Attempt to compile non supported file '" + dirFile.getName() + "'");
                 }
             }
-
         } else {
             files.add(file);
         }
@@ -164,11 +194,19 @@ public class Compile {
         return files;
     }
 
-    protected static List<Node> parse(List<String> filenames) throws FileNotFoundException, ParseException, ParseException {
+    /**
+     * Parse files
+     *
+     * @param fileNames
+     * @return
+     * @throws FileNotFoundException
+     * @throws ParseException
+     */
+    protected static List<Node> parse(List<String> fileNames) throws FileNotFoundException, ParseException, ParseException {
         CZECHJavaParser jp = null;
         List<Node> rootNodeList = new ArrayList<>();
 
-        for (File file : listAllFiles(filenames)) {
+        for (File file : listAllFiles(fileNames)) {
             Reader fr = new InputStreamReader(new FileInputStream(file));
 
             if (jp == null) {
@@ -178,13 +216,14 @@ public class Compile {
             }
 
             try {
-                //Parse
+                // Parse
                 jp.CompilationUnit();
                 ASTCompilationUnit node = (ASTCompilationUnit) jp.rootNode();
 
                 rootNodeList.add(node);
             } catch (ParseException ex) {
-                System.out.println("parse error in file " + file.getName() + ": " + ex.getMessage());
+                LOGGER.fatal(ex);
+                System.out.println("Parse error in file " + file.getName() + ": " + ex.getMessage());
                 throw ex;
             }
         }
@@ -192,6 +231,13 @@ public class Compile {
         return rootNodeList;
     }
 
+    /**
+     * Remove libraries from class list
+     *
+     * @param classList
+     * @return
+     * @throws IOException
+     */
     public static List<Class> removeLibraries(List<Class> classList) throws IOException {
 
         File directory = new File(Globals.COMPILED_LIBRARIES_DIRECTORY);
@@ -219,6 +265,11 @@ public class Compile {
         return classList;
     }
 
+    /**
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         exec(args);
     }

@@ -1,11 +1,12 @@
 package cz.fit.cvut.czechjava.compiler;
 
 /**
+ * Set of possible instructions
  *
  * @author Jakub
  */
 public enum InstructionSet {
-    //Integer
+    // Integer
     StoreInteger("istore"),
     LoadInteger("iload"),
     AddInteger("iadd"),
@@ -15,7 +16,7 @@ public enum InstructionSet {
     ModuloInteger("irem"),
     PushInteger("ipush"),
     IntegerToFloat("i2f"),
-    //Float
+    // Float
     StoreFloat("fstore"),
     LoadFloat("fload"),
     AddFloat("fadd"),
@@ -25,29 +26,29 @@ public enum InstructionSet {
     ModuloFloat("frem"),
     PushFloat("fpush"),
     FloatToInteger("f2i"),
-    //Reference
+    // Reference
     StoreReference("astore"),
     LoadReference("aload"),
     PushConstant("ldc"),
-    //Array
+    // Array
     NewArray("newarray"),
     StoreIntegerArray("iastore"),
     StoreReferenceArray("aastore"),
     LoadIntegerArray("iaload"),
     LoadReferenceArray("aaload"),
-    //Object
+    // Object
     New("new"),
     Duplicate("dup"),
     GetField("getfield"),
     PutField("putfield"),
-    //Compare Integer
+    // Compare Integer
     IfCompareEqualInteger("if_icmpeq"),
     IfCompareNotEqualInteger("if_icmpne"),
     IfCompareGreaterThanOrEqualInteger("if_icmpge"),
     IfCompareGreaterThanInteger("if_icmpgt"),
     IfCompareLessThanOrEqualInteger("if_icmple"),
     IfCompareLessThanInteger("if_icmplt"),
-    //Compare Float
+    // Compare Float
     FloatCompare("fcmpl"),
     IfEqualZero("ifeq"),
     IfNotEqualZero("ifne"),
@@ -55,7 +56,7 @@ public enum InstructionSet {
     IfLessOrEqualThanZero("ifle"),
     IfGreaterThanZero("ifgt"),
     IfGreaterOrEqualThanZero("ifge"),
-    //Calls
+    // Calls
     GoTo("goto"),
     InvokeVirtual("invokevirtual"),
     InvokeStatic("invokestatic"),
@@ -63,8 +64,8 @@ public enum InstructionSet {
     ReturnReference("areturn"),
     ReturnInteger("ireturn"),
     ReturnVoid("return"),
-    //Debug
-    Breakpoint("int"),;
+    // Debug
+    Breakpoint("int");
 
     private final String abbr;
 
@@ -72,11 +73,20 @@ public enum InstructionSet {
         this.abbr = abbr;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return abbr;
     }
 
+    /**
+     * Get instruction form string
+     *
+     * @param text
+     * @return instruction, or {@code null}
+     */
     public static InstructionSet fromString(String text) {
         if (text != null) {
             for (InstructionSet b : InstructionSet.values()) {

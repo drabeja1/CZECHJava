@@ -1,4 +1,4 @@
-package cz.fit.cvut.czechjava.interpreter;
+package cz.fit.cvut.czechjava.interpreter.exceptions;
 
 /**
  *

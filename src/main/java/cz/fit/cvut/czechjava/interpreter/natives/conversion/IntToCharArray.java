@@ -1,6 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter.natives.conversion;
 
-import cz.fit.cvut.czechjava.interpreter.InterpreterException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;

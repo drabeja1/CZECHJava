@@ -36,16 +36,13 @@ public class ByteCode {
         return instructions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
-        int in = 0;
-        for (Instruction i : instructions) {
-            sb.append(i).append(System.getProperty("line.separator"));
-            in++;
-        }
-
+        instructions.forEach(i -> sb.append(i).append(System.getProperty("line.separator")));    
         return sb.toString();
     }
 }

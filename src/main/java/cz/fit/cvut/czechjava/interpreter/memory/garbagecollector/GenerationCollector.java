@@ -35,7 +35,6 @@ public class GenerationCollector extends GarbageCollector {
     List<DirtyLink> generationDirtyLinks;
 
     public GenerationCollector(Stack stack, GenerationHeap heap) {
-        super(heap);
         this.heap = heap;
         this.stack = stack;
 

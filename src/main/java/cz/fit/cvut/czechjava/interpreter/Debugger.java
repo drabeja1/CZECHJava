@@ -1,5 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.compiler.ConstantPool;
 import cz.fit.cvut.czechjava.compiler.Field;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;

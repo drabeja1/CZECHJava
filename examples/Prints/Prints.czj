@@ -1,9 +1,9 @@
 startuj proved
 
-trida A {
+trida Test {
     necht cislo c proved
 
-    A(cislo c){
+    Test(cislo c){
         toto.c = c proved
     }
 
@@ -16,18 +16,19 @@ trida A {
 trida Udelatko {
 
     provadej() {
-        necht HodnePismenek text1 = "text1" proved
-        necht HodnePismenek text2 = "text2" proved
+        necht HodnePismenek text1 = "Test " proved
+        necht HodnePismenek text2 = "tisku" proved
 
-        necht cislo i = 250 proved
-        necht pismenko c = 'b' proved
+        necht cislo i = 100 proved
+        necht pismenko c = 'c' proved
         necht jeto b = jetotak proved
-        necht A a = vytvor A(1020) proved
+        necht Test a = vytvor Test(1000) proved
+
+        Konzole.vypis(text1) proved
+        Konzole.vypis(text2) proved
 
         Konzole.vypis(text1.pismenkoNa(2)) proved
         Konzole.vypis(text2.pridej(text2)) proved
-
-        Konzole.vypis(a) proved
 
         Konzole.vypis(a) proved
         Konzole.vypis(i) proved

@@ -1,7 +1,8 @@
-package cz.fit.cvut.czechjava.compiler;
+package cz.fit.cvut.czechjava.compiler.exceptions;
 
 /**
- *
+ * Type exception
+ * 
  * @author Jakub
  */
 public class TypeException extends Exception {

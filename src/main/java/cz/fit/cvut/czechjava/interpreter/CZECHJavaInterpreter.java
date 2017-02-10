@@ -1,5 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.Globals;
 import cz.fit.cvut.czechjava.compiler.Class;
 import cz.fit.cvut.czechjava.compiler.ConstantPool;
@@ -18,12 +20,18 @@ import cz.fit.cvut.czechjava.type.Types;
 
 import java.util.Iterator;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Jakub
  */
 public class CZECHJavaInterpreter {
+
+    /**
+     * Logger
+     */
+    private static final Logger LOGGER = Logger.getLogger(CZECHJavaInterpreter.class.getName());
 
     private final static int END_RETURN_ADDRESS = -1;
 
@@ -38,9 +46,7 @@ public class CZECHJavaInterpreter {
         this.stack = new Stack(frame_number, stack_size);
         this.classPool = new ClassPool(compiledClasses);
 
-        //Eden:Tenure 1:9
         this.heap = new GenerationHeap((int) (heap_size * 0.1), (int) (heap_size * 0.9), stack);
-
         GenerationCollector gc = new GenerationCollector(stack, heap);
         this.heap.setGarbageCollector(gc);
 
@@ -58,6 +64,7 @@ public class CZECHJavaInterpreter {
         try {
             mainClass = classPool.lookupClass(Globals.MAIN_CLASS_NAME);
         } catch (LookupException e) {
+            LOGGER.fatal("Main class not found.", e);
             throw new InterpreterException("Main class not found. The name has to be '" + Globals.MAIN_CLASS_NAME + "'");
         }
 
@@ -68,6 +75,7 @@ public class CZECHJavaInterpreter {
         }
 
         if (mainMethod == null) {
+            LOGGER.fatal("Main method not found. The name has to be '" + Globals.MAIN_METHOD_NAME + "'");
             throw new InterpreterException("Main method not found. The name has to be '" + Globals.MAIN_METHOD_NAME + "'");
         }
 

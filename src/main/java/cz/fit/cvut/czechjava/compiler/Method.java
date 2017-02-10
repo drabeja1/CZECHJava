@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.compiler;
 
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
-import cz.fit.cvut.czechjava.interpreter.LookupException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.type.ArrayType;
 import cz.fit.cvut.czechjava.type.ReferenceType;
 import cz.fit.cvut.czechjava.type.Type;
@@ -19,7 +19,8 @@ import java.util.Set;
 public class Method {
 
     public enum MethodFlag {
-        Native, Static
+        Native,
+        Static;
     }
 
     protected String name;
@@ -60,7 +61,6 @@ public class Method {
 
             String[] parts = methodPart.split(":");
             args = new ArrayList<>();
-            //TODO: Put real return type
             returnType = Types.Void();
 
             for (int i = 0; i < parts.length; i++) {
@@ -76,9 +76,6 @@ public class Method {
     }
 
     public int getSimilarity(Method method, ClassPool classPool) throws LookupException {
-        //Best similarity = 0
-        int similarity = 0;
-
         if (!method.getName().equals(this.getName())) {
             return -1;
         }
@@ -87,17 +84,18 @@ public class Method {
             return -1;
         }
 
+        int similarity = 0;
         int i = 0;
         for (Type methodArgType : method.getArgs()) {
             Type argType = this.getArgs().get(i);
 
-            //If it's arrays, use their elements
+            // If it's arrays, use their elements
             if (methodArgType instanceof ArrayType && argType instanceof ArrayType) {
                 methodArgType = ((ArrayType) methodArgType).getElement();
                 argType = ((ArrayType) argType).getElement();
             }
 
-            //If it's both objects
+            // If it's both objects
             if (methodArgType instanceof ReferenceType && argType instanceof ReferenceType) {
                 String methodArgClassName = ((ReferenceType) methodArgType).getClassName();
                 String argClassName = ((ReferenceType) argType).getClassName();
@@ -105,14 +103,13 @@ public class Method {
                 Class methodArgClass = classPool.lookupClass(methodArgClassName);
                 Class argClass = classPool.lookupClass(argClassName);
 
-                //Check whether arguments inherit from each other
+                // Check whether arguments inherit from each other
                 if (argClass.inheritsFrom(methodArgClass)) {
-                    //Increase similarity score if it's inheriting from class
+                    // Increase similarity score if it's inheriting from class
                     similarity += argClass.getDistanceFrom(methodArgClass);
                 } else {
                     return -1;
                 }
-
             } else if (methodArgType != argType) {
                 return -1;
             }
@@ -206,6 +203,9 @@ public class Method {
         return sb.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return getDescriptor();

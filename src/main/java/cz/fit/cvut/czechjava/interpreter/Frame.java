@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.compiler.Method;
 import cz.fit.cvut.czechjava.type.NumberType;
 

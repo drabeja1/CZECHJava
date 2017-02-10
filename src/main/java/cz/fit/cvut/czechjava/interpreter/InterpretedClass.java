@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.compiler.Class;
 
 /**

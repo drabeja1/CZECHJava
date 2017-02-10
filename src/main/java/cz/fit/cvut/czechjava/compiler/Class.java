@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.compiler;
 
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
-import cz.fit.cvut.czechjava.interpreter.LookupException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.type.Type;
 import cz.fit.cvut.czechjava.type.Types;
 
@@ -23,13 +23,10 @@ public class Class {
     private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     protected List<String> flags;
-
     protected String className;
     protected String superName;
-
     protected List<Field> fields;
     protected List<Method> methods;
-
     protected ConstantPool constantPool;
 
     Class superClass;
@@ -139,7 +136,7 @@ public class Class {
                 Method superMethod = superClass.lookupMethod(descriptor, classPool);
                 allMethods.add(superMethod);
             } catch (LookupException e) {
-                //Supress exception in super call
+                // Supress exception in super call - logg it
                 LOGGER.warn(e);
             }
         }
@@ -161,7 +158,6 @@ public class Class {
 
     public int lookupField(String name) throws LookupException {
         int i = 0;
-
         String lowerCase = name.toLowerCase();
 
         for (Field field : getAllFields()) {
@@ -211,6 +207,9 @@ public class Class {
         throw new IllegalArgumentException("Class  doesn't inherit from " + anotherClass.getClassName() + "'");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

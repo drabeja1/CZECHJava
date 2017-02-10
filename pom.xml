@@ -15,6 +15,12 @@
     
     <!-- DEPENDENCIES -->
     <dependencies>
+        <!-- TRUFFLE -->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>truffle</artifactId>
+            <version>0.6</version>
+        </dependency>
         <!-- LOGGER -->
         <dependency>
             <groupId>log4j</groupId>

@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.compiler;
 
+import cz.fit.cvut.czechjava.compiler.exceptions.CompilerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +120,9 @@ public class Instruction {
         this.instruction = newInst;
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

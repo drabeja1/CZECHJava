@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter.natives.io.file;
 
 import cz.fit.cvut.czechjava.interpreter.Converter;
-import cz.fit.cvut.czechjava.interpreter.InterpreterException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.natives.Native;

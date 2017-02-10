@@ -10,8 +10,8 @@ import java.util.*;
  */
 public class MethodCompilation {
 
-    ByteCode byteCode;
-    Map<String, Variable> localVars;
+    private final ByteCode byteCode;
+    private final Map<String, Variable> localVars;
 
     public MethodCompilation() {
         byteCode = new ByteCode();
@@ -44,8 +44,7 @@ public class MethodCompilation {
 
     public Variable getLocalVariable(String name) {
         name = name.toLowerCase();
-        Variable var = localVars.get(name);
-        return var;
+        return localVars.get(name);
     }
 
     public int getNumberOfLocalVariables() {
@@ -53,18 +52,15 @@ public class MethodCompilation {
     }
 
     public Variable getLocalVariable(int index) {
-        Variable var = localVars.get(variablesKeySet().get(index));
-        return var;
+        return localVars.get(variablesKeySet().get(index));
     }
 
     public int getPositionOfLocalVariable(String name) {
         name = name.toLowerCase();
-        int pos = variablesKeySet().indexOf(name);
-        return pos;
+        return variablesKeySet().indexOf(name);
     }
 
     protected List<String> variablesKeySet() {
         return new ArrayList<>(localVars.keySet());
     }
-
 }

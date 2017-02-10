@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.compiler.Method;
 
 /**
@@ -33,6 +34,10 @@ public class Stack {
         return frames[i];
     }
 
+    public Frame[] getFrames() {
+        return frames;
+    }
+    
     public int getFramesNumber() {
         return framesNumber;
     }
@@ -43,7 +48,7 @@ public class Stack {
 
     public void deleteCurrentFrame() throws InterpreterException {
         if (framesNumber <= 0) {
-            throw new InterpreterException("There are no frames");
+            throw new InterpreterException("There are no frames!");
         }
         frames[framesNumber - 1] = null;
         framesNumber--;

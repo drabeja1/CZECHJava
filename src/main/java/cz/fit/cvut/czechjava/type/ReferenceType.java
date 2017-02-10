@@ -8,7 +8,7 @@ public class ReferenceType extends Type {
         this.className = className;
     }
 
-    public java.lang.String getClassName() {
+    public String getClassName() {
         return className;
     }
 

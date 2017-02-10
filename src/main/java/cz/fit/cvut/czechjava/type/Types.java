@@ -6,15 +6,9 @@ import java.util.Map;
 
 public class Types {
 
-    static Map<String, Type> singletons;
+    private final static Map<String, Type> SINGLETONS = new HashMap<>();
 
-    private static void addSingleton(Type type) {
-        singletons.put(type.toString(), type);
-    }
-
-    public static void init() {
-        singletons = new HashMap<>();
-
+    static {
         addSingleton(new BooleanType());
         addSingleton(new CharType());
         addSingleton(new FloatType());
@@ -27,11 +21,12 @@ public class Types {
         addSingleton(new ArrayType(Float()));
     }
 
+    private static void addSingleton(Type type) {
+        SINGLETONS.put(type.toString(), type);
+    }
+
     public static Type getSingleton(String name) {
-        if (singletons == null) {
-            init();
-        }
-        return singletons.get(name);
+        return SINGLETONS.get(name);
     }
 
     public static BooleanType Boolean() {

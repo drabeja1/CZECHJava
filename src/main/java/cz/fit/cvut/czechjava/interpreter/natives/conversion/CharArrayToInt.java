@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter.natives.conversion;
 
 import cz.fit.cvut.czechjava.interpreter.Converter;
-import cz.fit.cvut.czechjava.interpreter.InterpreterException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
@@ -24,13 +24,10 @@ public class CharArrayToInt extends Native {
     @Override
     public StackValue invoke(StackValue[] args) throws HeapOverflow, InterpreterException {
         StackValue ref = args[0];
-
         Array array = heap.loadArray(ref);
         char[] chars = Converter.arrayToCharArray(array);
-
         int i = Integer.parseInt(new String(chars));
-
-        StackValue result = new StackValue(i, StackValue.Type.Primitive);
-        return result;
+        
+        return new StackValue(i, StackValue.Type.Primitive);
     }
 }

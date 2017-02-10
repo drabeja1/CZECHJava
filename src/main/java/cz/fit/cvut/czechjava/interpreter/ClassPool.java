@@ -1,5 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.compiler.Class;
 
 import java.util.ArrayList;
@@ -11,15 +13,15 @@ import java.util.List;
  */
 public class ClassPool {
 
-    List<InterpretedClass> classes;
+    private final List<InterpretedClass> classes;
 
     public ClassPool(List<Class> classes) throws LookupException {
         this.classes = new ArrayList<>();
 
-        //Convert compiled classes to interpreted classes
+        // Convert compiled classes to interpreted classes
         classes.forEach(c -> addClass(new InterpretedClass(c)));
 
-        //Find super class
+        // Find super class
         for (InterpretedClass ic : this.classes) {
             if (ic.getSuperName() != null && ic.getSuperName().length() > 0) {
                 ic.setSuperClass(lookupClass(ic.getSuperName()));

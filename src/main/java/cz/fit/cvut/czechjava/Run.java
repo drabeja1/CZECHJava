@@ -17,16 +17,22 @@ import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
 
 /**
- * Zakladni trida pro spusteni interpreteru
- * 
+ * Runner of interpreter
+ *
  * @author Jakub
  */
 public class Run {
+
     /**
      * Logger
      */
     private static final Logger LOGGER = Logger.getLogger(Run.class.getName());
-    
+
+    /**
+     * Prepare arguments options
+     *
+     * @return
+     */
     private static Options prepareOptions() {
         Option heapSizeOpt = new Option("h", "heap", true, "Velikost heap. (volitelne)");
         heapSizeOpt.setOptionalArg(true);
@@ -58,7 +64,7 @@ public class Run {
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         Options options = prepareOptions();
-        
+
         try {
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("heap")) {
@@ -92,15 +98,14 @@ public class Run {
 
     public static List<cz.fit.cvut.czechjava.compiler.Class> loadClassfiles(String directoryName) throws IOException {
         File directory = new File(directoryName);
-
         List<cz.fit.cvut.czechjava.compiler.Class> classList = new ArrayList<>();
 
         if (directory.isDirectory()) {
             File[] dirFiles = directory.listFiles();
             for (File dirFile : dirFiles) {
                 String extension = "";
-
                 int i = dirFile.getName().lastIndexOf('.');
+                
                 if (i > 0) {
                     extension = dirFile.getName().substring(i + 1);
                 }
@@ -109,8 +114,8 @@ public class Run {
                     classList.add(Classfile.fromFile(dirFile));
                 }
             }
-
         } else {
+            LOGGER.error("Directory of class files doesnt set!");
             System.out.println("Please include directory of class files");
             System.exit(0);
         }
@@ -121,7 +126,7 @@ public class Run {
     /**
      * Main method
      *
-     * @param args
+     * @param args arguments
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {

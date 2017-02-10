@@ -4,8 +4,9 @@ import cz.fit.cvut.czechjava.Globals;
 
 public class CharType extends Type {
 
-    public static int size = 4;
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return Globals.CHAR_TYPE_NAME;

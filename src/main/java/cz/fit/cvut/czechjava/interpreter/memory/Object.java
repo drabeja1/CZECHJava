@@ -4,7 +4,7 @@ import cz.fit.cvut.czechjava.compiler.Field;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.interpreter.Converter;
 import cz.fit.cvut.czechjava.interpreter.InterpretedClass;
-import cz.fit.cvut.czechjava.interpreter.InterpreterException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.State;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
 

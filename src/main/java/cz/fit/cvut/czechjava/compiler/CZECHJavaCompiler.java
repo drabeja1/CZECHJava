@@ -1,8 +1,10 @@
 package cz.fit.cvut.czechjava.compiler;
 
+import cz.fit.cvut.czechjava.compiler.exceptions.CompilerException;
+import cz.fit.cvut.czechjava.compiler.exceptions.TypeException;
 import cz.fit.cvut.czechjava.Globals;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
-import cz.fit.cvut.czechjava.interpreter.LookupException;
+import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.parser.*;
 import cz.fit.cvut.czechjava.type.*;
 import java.util.ArrayList;
@@ -11,36 +13,45 @@ import java.util.Iterator;
 
 import java.util.List;
 import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
+ * Compiler for CZECHJava
  *
  * @author Jakub
  */
 public class CZECHJavaCompiler {
 
+    /**
+     * Compiler mods
+     */
     protected enum Mode {
-        PRECOMPILE, COMPILE
+        PRECOMPILE,
+        COMPILE;
     }
 
+    private final static Logger LOGGER = Logger.getLogger(CZECHJavaCompiler.class.getName());
     private final static String STRING_CLASS = Types.String().toString();
+
     protected ConstantPool constantPool;
     protected ClassPool classPool;
     protected Class currentClass;
     protected Method currentMethod;
     protected Mode mode;
 
-    //In precompilation we just go trough declarations
+    // In precompilation we just go trough declarations
     public List<Class> precompile(Node node) throws CompilerException {
         this.mode = Mode.PRECOMPILE;
         reset();
         return run(node);
     }
 
-    //In compilation we go through all bytecode
+    // In compilation we go through all bytecode
     public List<Class> compile(Node node, ClassPool classPool) throws CompilerException {
         this.mode = Mode.COMPILE;
         reset();
         this.classPool = classPool;
+
         return run(node);
     }
 
@@ -53,6 +64,7 @@ public class CZECHJavaCompiler {
 
     protected List<Class> run(Node node) throws CompilerException {
         if (node.jjtGetNumChildren() == 0) {
+            LOGGER.fatal("No classes to compile");
             throw new CompilerException("No classes to compile");
         }
 
@@ -61,7 +73,6 @@ public class CZECHJavaCompiler {
         do {
             Node child = node.jjtGetChild(i);
             if (child instanceof ASTClass) {
-
                 try {
                     aClasses.add(compileClass((ASTClass) child));
                 } catch (CompilerException e) {
@@ -90,15 +101,14 @@ public class CZECHJavaCompiler {
         }
 
         Class aClass = null;
-
         if (mode == Mode.COMPILE) {
             try {
                 aClass = this.classPool.lookupClass(className);
+                this.constantPool = aClass.getConstantPool();
             } catch (LookupException e) {
+                LOGGER.error(e);
                 e.printStackTrace();
             }
-
-            this.constantPool = aClass.getConstantPool();
         } else {
             aClass = new Class();
             aClass.setClassName(className);
@@ -122,17 +132,23 @@ public class CZECHJavaCompiler {
             }
         }
 
-        //Set the fields only once in precompilation
+        // Set the fields only once in precompilation
         if (mode == Mode.PRECOMPILE) {
             aClass.setFields(fields);
-            //Add generic constructor if needed
+            // Add generic constructor if needed
             addGenericConstructor(aClass);
         }
         return aClass;
     }
 
+    /**
+     * Add generic constructor to Class
+     *
+     * @param aClass
+     * @throws CompilerException
+     */
     protected void addGenericConstructor(Class aClass) throws CompilerException {
-        //Skip if class already has constructor
+        // Skip if class already has constructor
         for (Method method : aClass.getMethods()) {
             if (method.getName().equals(aClass.getClassName())) {
                 return;
@@ -140,38 +156,35 @@ public class CZECHJavaCompiler {
         }
 
         String className = aClass.getClassName();
-
         Type classType = Types.Reference(className);
-
         MethodCompilation compilation = new MethodCompilation();
 
-        //Add this variable
+        // Add this variable
         compilation.addLocalVariable(Globals.THIS_VARIABLE, classType);
 
-        //Get it's position
         int thisPosition = compilation.getPositionOfLocalVariable(Globals.THIS_VARIABLE);
-
         String superClass = aClass.getSuperName();
 
-        //Call super constructor
+        // Call super constructor
         if (superClass != null) {
-            //Call on this
+            // Call on this
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.LoadReference, thisPosition));
 
-            //Create descriptor for super
-            String superConstructorDescriptor = Method.getDescriptor(superClass, new ArrayList<Type>(), superClass);
+            // Create descriptor for super
+            String superConstructorDescriptor = Method.getDescriptor(superClass, new ArrayList<>(), superClass);
             int constructorIndex = constantPool.addConstant(superConstructorDescriptor);
-            //Call the method
+
+            // Call the method
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.InvokeVirtual, constructorIndex));
         } else {
-            //Load This on stack and return it
+            // Load This on stack and return it
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.LoadReference, thisPosition));
         }
 
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.ReturnReference, thisPosition));
 
-        //Create new method
-        Method constructor = new Method(className, new ArrayList<Type>(), className, classType);
+        // Create new method
+        Method constructor = new Method(className, new ArrayList<>(), className, classType);
         constructor.setByteCode(compilation.getByteCode());
         constructor.setLocalVariablesCount(compilation.getNumberOfLocalVariables());
 
@@ -179,16 +192,13 @@ public class CZECHJavaCompiler {
     }
 
     protected List<Field> fieldDeclaration(ASTFieldDeclaration node) throws CompilerException {
-        Type type;
-
-        //First child is Type
-        type = type((ASTType) node.jjtGetChild(0));
+        // First child is Type
+        Type type = type((ASTType) node.jjtGetChild(0));
         List<Field> fields = new ArrayList<>();
 
-        //Second and others (There can be more fields declared) are names
+        // Second and others (There can be more fields declared) are names
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             ASTVariable nameNode = (ASTVariable) node.jjtGetChild(i);
-
             Field field = new Field(nameNode.jjtGetValue().toString().toLowerCase(), type);
             fields.add(field);
         }
@@ -218,7 +228,7 @@ public class CZECHJavaCompiler {
             throw new CompilerException("Unexpected type " + typeNode);
         }
 
-        //name[]
+        // name[]
         if (node.jjtGetNumChildren() == 2) {
             type = Types.Array(type);
         }
@@ -250,27 +260,24 @@ public class CZECHJavaCompiler {
                     returnType = type((ASTType) resultType.jjtGetChild(0));
                 }
             } else if (child instanceof ASTMethod) {
-
                 name = ((ASTMethod) child).jjtGetValue().toString().toLowerCase();
-
-                //It's a constructor
+                // It's a constructor
                 if (name.equals(aClass.getClassName())) {
                     isConstructor = true;
-                    //Set return type as this
+                    // Set return type as this
                     returnType = Types.Reference(aClass.getClassName());
                 }
 
-                //Add This as first argument
+                // Add This as first argument
                 compilation.addLocalVariable(Globals.THIS_VARIABLE, Types.Reference(aClass.getClassName()));
 
-                //Add the rest of arguments
+                // Add the rest of arguments
                 ASTFormalParameters params = (ASTFormalParameters) child.jjtGetChild(0);
                 args = formalParameters(params, compilation);
-
                 method = new Method(name, args, aClass.getClassName(), returnType);
 
                 if (mode == Mode.COMPILE) {
-                    //Find already declared method
+                    // Find already declared method
                     for (Method m : aClass.getMethods()) {
                         if (m.getDescriptor().equals(method.getDescriptor())) {
                             method = m;
@@ -280,9 +287,7 @@ public class CZECHJavaCompiler {
                 } else {
                     aClass.addMethod(method);
                 }
-
                 currentMethod = method;
-
             } else if (child instanceof ASTBlock) {
                 if (mode == Mode.COMPILE) {
                     methodBlock((ASTBlock) child, name, returnType, isConstructor, compilation);
@@ -311,7 +316,7 @@ public class CZECHJavaCompiler {
             args.add(type);
             compilation.addLocalVariable(name, type);
 
-            //We conclude that the arguments are initialized
+            // We conclude that the arguments are initialized
             Variable var = compilation.getLocalVariable(name);
             var.setInitialized(true);
         }
@@ -322,10 +327,10 @@ public class CZECHJavaCompiler {
     protected void methodBlock(ASTBlock node, String name, Type returnType, boolean isConstructor, MethodCompilation compilation) throws CompilerException {
         block(node, -1, compilation);
 
-        //Constructor always return this
+        // Constructor always return this
         if (isConstructor) {
             returnStatement(new ASTThis(), compilation);
-            //On the end of a method is always empty return
+            // On the end of a method is always empty return
         } else if (returnType == Types.Void()) {
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.ReturnVoid));
         }
@@ -351,7 +356,7 @@ public class CZECHJavaCompiler {
     protected List<Instruction> statement(ASTStatement node, int cycleStart, MethodCompilation compilation) throws CompilerException {
         Node child = node.jjtGetChild(0);
 
-        //Everything written with a 'proved' in the end
+        // Everything written with a 'proved' in the end
         if (child instanceof ASTStatementExpression) {
             statementExpression((ASTStatementExpression) child, compilation);
         } else if (child instanceof ASTIfStatement) {
@@ -377,23 +382,20 @@ public class CZECHJavaCompiler {
     protected void statementExpression(ASTStatementExpression node, MethodCompilation compilation) throws CompilerException {
         Node child = node.jjtGetChild(0);
 
-        //It's an variableAssignment
+        // It's an variableAssignment
         if (child instanceof ASTAssignment) {
             Node assignmentNode = node.jjtGetChild(0);
 
-            //Assignee
+            // Assignee + Expression
             Node left = assignmentNode.jjtGetChild(0);
-
-            //Expression
             Node right = assignmentNode.jjtGetChild(1);
-
             if (left.jjtGetNumChildren() == 1 || (CompilerTypes.isArray(left) && left.jjtGetNumChildren() == 2)) {
                 variableAssignment(left, right, compilation);
             } else {
                 fieldAssignment(left, right, compilation);
             }
 
-            //It's a call
+            // It's a call
         } else if (child instanceof ASTPrimaryExpression) {
             call(node.jjtGetChild(0), compilation);
         } else {
@@ -423,12 +425,10 @@ public class CZECHJavaCompiler {
             } catch (TypeException te) {
                 throw new CompilerException("Returning incompatible type in method '" + name + "': " + te.getMessage());
             }
-
         } else {
             if (returnType != Types.Void()) {
                 throw new CompilerException("Method '" + name + "' must return non-void value");
             }
-
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.ReturnVoid));
         }
     }
@@ -442,16 +442,14 @@ public class CZECHJavaCompiler {
         boolean isArray = CompilerTypes.isArray(left);
 
         int childNumber = left.jjtGetNumChildren();
-        //Last member is [..Expression..]
+        // Last member is [..Expression..]
         int lastField = (isArray) ? childNumber - 2 : childNumber - 1;
         if (childNumber > 1) {
-
             for (int i = 0; i < lastField + 1; i++) {
                 Node child = left.jjtGetChild(i);
 
-                //First is always object variable/this/super
+                // First is always object variable/this/super
                 if (i == 0) {
-
                     Type type = getTypeForExpression(child, compilation);
 
                     if (type instanceof ReferenceType) {
@@ -459,36 +457,28 @@ public class CZECHJavaCompiler {
                     } else {
                         throw new CompilerException("Trying to set field on non-object ");
                     }
-
                     //Middle is normal field
                 } else if (i < lastField) {
                     getField((ASTName) child, compilation);
                     //Last is field we want to set
                 } else {
-
                     if (isArray) {
                         //Load array reference on the stack
                         getField((ASTName) child, compilation);
-
                         //Push array index on stack
                         Node arrayIndexExpression = simplifyExpression(left.jjtGetChild(childNumber - 1).jjtGetChild(0));
                         evaluateExpression(arrayIndexExpression, compilation);
 
                         Type type = getTypeForExpression(right, compilation);
-
                         //Value
                         evaluateExpression(right, compilation);
-
                         storeArray(type, compilation);
                     } else {
-
                         evaluateExpression(right, compilation);
-
                         putField((ASTName) child, compilation);
                     }
                 }
             }
-
         } else {
             throw new CompilerException("Expected field assignment");
         }
@@ -529,24 +519,23 @@ public class CZECHJavaCompiler {
             typeCheck(type, rightType);
 
             if (isArray) {
-                //Load array reference on the stack
+                // Load array reference on the stack
                 variable((ASTName) left.jjtGetChild(0), compilation);
 
-                //Push array index on stack
+                // Push array index on stack
                 Node arrayIndexExpression = simplifyExpression(left.jjtGetChild(1).jjtGetChild(0));
                 evaluateExpression(arrayIndexExpression, compilation);
 
-                //Value on stack
+                // Value on stack
                 evaluateExpression(right, compilation);
 
                 storeArray(type, compilation);
             } else {
-                //Evaluate and put value on stack
+                // Evaluate and put value on stack
                 evaluateExpression(right, compilation);
 
                 storeVariable(var, compilation);
             }
-
         } catch (TypeException e) {
             throw new CompilerException("Type error on '" + name + "': " + e.getMessage());
         }
@@ -554,12 +543,12 @@ public class CZECHJavaCompiler {
     }
 
     protected void evaluateExpression(Node expression, MethodCompilation compilation) throws CompilerException {
-        //Run expression
+        // Run expression
         List<Instruction> ifInstructions = expression(expression, compilation);
 
-        //If the expression is a condition we have to evaluate it
+        // If the expression is a condition we have to evaluate it
         if (CompilerTypes.isConditionalExpression(expression)) {
-            //Converts cond expression to actual boolean instruction
+            // Converts cond expression to actual boolean instruction
             convertConditionalExpressionToBoolean(expression, ifInstructions, compilation);
         }
     }
@@ -569,7 +558,7 @@ public class CZECHJavaCompiler {
         if (type instanceof ReferenceType) {
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.StoreReferenceArray));
         } else {
-            //TODO: StoreFloat?
+            // TODO: StoreFloat?
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.StoreIntegerArray));
         }
     }
@@ -579,7 +568,7 @@ public class CZECHJavaCompiler {
         if (type instanceof ReferenceType) {
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.LoadReferenceArray));
         } else {
-            //TODO: LoadFloat?
+            // TODO: LoadFloat?
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.LoadIntegerArray));
         }
 
@@ -588,7 +577,6 @@ public class CZECHJavaCompiler {
     protected void storeVariable(Variable var, MethodCompilation compilation) {
         int variableIndex = compilation.getPositionOfLocalVariable(var.getName());
         Type type = var.getType();
-
         InstructionSet instruction;
 
         if (type instanceof ReferenceType) {
@@ -608,14 +596,12 @@ public class CZECHJavaCompiler {
         }
 
         compilation.getByteCode().addInstruction(new Instruction(instruction, variableIndex));
-
         var.setInitialized(true);
     }
 
     protected void loadVariable(Variable var, MethodCompilation compilation) {
         int variableIndex = compilation.getPositionOfLocalVariable(var.getName());
         Type type = var.getType();
-
         InstructionSet instruction;
 
         if (type instanceof ReferenceType) {
@@ -653,13 +639,12 @@ public class CZECHJavaCompiler {
 
             int rightPosition = compilation.getPositionOfLocalVariable(rightName);
             if (rightPosition == -1) {
-                //It's undeclared it has to be static class
+                // It's undeclared it has to be static class
                 return Types.Reference(rightName);
-                //throw new CompilerException("Variable '" + rightName + "' is undeclared");
             }
             return compilation.getTypeOfLocalVariable(rightName);
         } else if (CompilerTypes.isAllocationExpression(value)) {
-            //ArrayType of primitives
+            // ArrayType of primitives
             if (CompilerTypes.isArray(value)) {
                 Type elementType;
                 Node element = value.jjtGetChild(0);
@@ -691,7 +676,6 @@ public class CZECHJavaCompiler {
             }
             return null;
         } else if (CompilerTypes.isNullLiteral(value)) {
-            //Any reference
             return null;
         } else if (CompilerTypes.isCallExpression(value)) {
             return getTypeForMethodCall(value, compilation);
@@ -723,12 +707,12 @@ public class CZECHJavaCompiler {
     }
 
     protected void typeCheck(Type type, Type valueType) throws TypeException, CompilerException {
-        //We are not able to determine the type (Method call)
+        // We are not able to determine the type (Method call)
         if (valueType == null) {
             return;
         }
 
-        //Don't type control when it's both references (They can inherit from each other)
+        // Don't type control when it's both references (They can inherit from each other)
         if (type instanceof ReferenceType && valueType instanceof ReferenceType) {
             try {
                 Class valueClass = classPool.lookupClass(((ReferenceType) valueType).getClassName());
@@ -745,7 +729,7 @@ public class CZECHJavaCompiler {
             }
         }
 
-        //Char and Int are the same
+        // Char and Int are the same
         if (type == Types.Number() && valueType == Types.Char() || type == Types.Char() && valueType == Types.Number()) {
             return;
         }
@@ -769,16 +753,13 @@ public class CZECHJavaCompiler {
     }
 
     protected Type getTypeForMethodCall(Node node, MethodCompilation compilation) throws CompilerException {
-
         Class callerClass = null;
-
         try {
-
-            //Get type for first member
-            //It's method call on This
+            // Get type for first member
+            // It's method call on This
             if (node.jjtGetNumChildren() == 2) {
                 callerClass = currentClass;
-                //It's variable or static class
+                // It's variable or static class
             } else {
                 Type classType = getTypeForExpression(node.jjtGetChild(0), compilation);
 
@@ -787,7 +768,7 @@ public class CZECHJavaCompiler {
                 }
             }
 
-            //Get type for field
+            // Get type for field
             for (int i = 1; i < node.jjtGetNumChildren() - 2; i++) {
                 String fieldName = ((ASTName) node.jjtGetChild(i)).jjtGetValue().toString();
 
@@ -818,7 +799,7 @@ public class CZECHJavaCompiler {
             Method method = callerClass.lookupMethod(methodDescriptor, classPool);
             return method.getReturnType();
         } catch (LookupException e) {
-            //We do not know what method it is, let the invoke handle it
+            // We do not know what method it is, let the invoke handle it
             return null;
         }
     }
@@ -834,9 +815,9 @@ public class CZECHJavaCompiler {
 
         Node caller = node.jjtGetChild(0);
 
-        //If it's just the method and arguments
+        // If it's just the method and arguments
         if (node.jjtGetNumChildren() == 2) {
-            //super(...) || this(...) - it's constructor call
+            // super(...) || this(...) - it's constructor call
             if (CompilerTypes.isSuper(caller) || CompilerTypes.isThis(caller)) {
                 constructorCall(node, compilation);
                 return;
@@ -845,17 +826,16 @@ public class CZECHJavaCompiler {
             }
         }
 
-        //Method name is one before last child
+        // Method name is one before last child
         ASTName method = (ASTName) node.jjtGetChild(node.jjtGetNumChildren() - 2);
         String methodName = method.jjtGetValue().toString().toLowerCase();
 
-        //Arguments are last child
+        // Arguments are last child
         ASTArguments args = (ASTArguments) node.jjtGetChild(node.jjtGetNumChildren() - 1);
-        //Push arguments on the stack
+        // Push arguments on the stack
         arguments(args, compilation);
 
         Class objectClass;
-
         Type type = getTypeForExpression(caller, compilation);
 
         if (!(type instanceof ReferenceType)) {
@@ -872,53 +852,48 @@ public class CZECHJavaCompiler {
 
         if (CompilerTypes.isVariable(caller)) {
             int variablePosition = compilation.getPositionOfLocalVariable(((ASTName) caller).jjtGetValue().toString());
-
-            //If it's variable.
+            // If it's variable.
             if (variablePosition != -1) {
                 variable((ASTName) caller, compilation);
-                //It has to be static class
+                // It has to be static class
             } else {
-                //Put null pointer on stack
+                // Put null pointer on stack
                 compilation.getByteCode().addInstruction(new Instruction(InstructionSet.PushInteger, 0));
                 staticCall = true;
             }
         } else {
-            //Evaluate caller
+            // Evaluate caller
             expression(caller, compilation);
         }
 
-        //Load fields (if any)
+        // Load fields (if any)
         for (int i = 1; i < node.jjtGetNumChildren() - 2; i++) {
             ASTName field = (ASTName) node.jjtGetChild(i);
             getField(field, compilation);
         }
 
-        //Get types of arguments (whether they are expression, variables or method call)
+        // Get types of arguments (whether they are expression, variables or method call)
         List<Type> argTypes = getArgumentsTypes(args, compilation);
-
         invokeMethod(objectClass, methodName, argTypes, staticCall, (caller instanceof ASTSuper), compilation);
-
     }
 
     protected void constructorCall(Node node, MethodCompilation compilation) throws CompilerException {
         Node caller = node.jjtGetChild(0);
         Node arguments = node.jjtGetChild(1);
 
-        //Put arguments on stack
+        // Put arguments on stack
         arguments(arguments, compilation);
 
-        //Load argument types
+        // Load argument types
         List<Type> argTypes = getArgumentsTypes(arguments, compilation);
-
         String className;
 
-        //Get super classname
+        // Get super classname
         ReferenceType type = (ReferenceType) getTypeForExpression(caller, compilation);
         className = type.getClassName();
 
-        //Put caller ref on stack
+        // Put caller ref on stack
         expression(caller, compilation);
-
         invokeConstructor(className, argTypes, compilation);
     }
 
@@ -928,7 +903,6 @@ public class CZECHJavaCompiler {
 
     protected Type getTypeForFields(Node node, int fieldIndex, MethodCompilation compilation) throws CompilerException {
         Node first = node.jjtGetChild(0);
-
         Type firstType = getTypeForExpression(first, compilation);
 
         if (firstType instanceof ReferenceType || firstType instanceof ArrayType) {
@@ -945,44 +919,39 @@ public class CZECHJavaCompiler {
 
                         ASTName fieldNode = (ASTName) node.jjtGetChild(i);
 
-                        //Find field in class
+                        // Find field in class
                         int fieldPosition = objClass.lookupField(fieldNode.jjtGetValue().toString());
                         Field field = objClass.getField(fieldPosition);
 
                         fieldType = field.getType();
 
                     } else if (child instanceof ASTArraySuffix) {
-                        //Set type as an element of the array
+                        // Set type as an element of the array
                         fieldType = arrayType.getElement();
                     } else {
                         throw new CompilerException("Unexpected element in fields");
                     }
 
-                    //If it's required field
+                    // If it's required field
                     if (i == fieldIndex) {
                         return fieldType;
                     }
 
-                    //Not last field - it has to be object
+                    // Not last field - it has to be object or array
                     if (fieldType instanceof ReferenceType) {
                         objClass = classPool.lookupClass(((ReferenceType) fieldType).getClassName());
-                        //Or an array
                     } else if (fieldType instanceof ArrayType) {
                         arrayType = (ArrayType) fieldType;
                     } else {
                         throw new CompilerException("Trying to get field from a non-object ");
                     }
-
                 }
-
             } catch (LookupException e) {
                 throw new CompilerException(e.getMessage());
             }
-
         } else {
             throw new CompilerException("Trying to get field from a non-object ");
         }
-
         return null;
     }
 
@@ -992,19 +961,18 @@ public class CZECHJavaCompiler {
         if (CompilerTypes.isVariable(first) || CompilerTypes.isThis(first) || CompilerTypes.isSuper(first)) {
             expression(node.jjtGetChild(0), compilation);
 
-            //Load fields (if any)
+            // Load fields (if any)
             for (int i = 1; i < node.jjtGetNumChildren(); i++) {
                 Node child = node.jjtGetChild(i);;
                 if (child instanceof ASTName) {
                     ASTName field = (ASTName) child;
                     getField(field, compilation);
                 } else if (child instanceof ASTArraySuffix) {
-                    //It's an array
+                    // It's an array
                     Node arrayIndexExpression = simplifyExpression(child.jjtGetChild(0));
                     evaluateExpression(arrayIndexExpression, compilation);
 
                     Type type = getTypeForFields(node, i, compilation);
-
                     loadArray(type, compilation);
                 }
             }
@@ -1014,11 +982,10 @@ public class CZECHJavaCompiler {
     }
 
     protected void arguments(Node node, MethodCompilation compilation) throws CompilerException {
-        //Put arguments on stack in reverse order
+        // Put arguments on stack in reverse order
         for (int i = node.jjtGetNumChildren() - 1; i >= 0; i--) {
             Node child = node.jjtGetChild(i);
             child = simplifyExpression(child);
-
             evaluateExpression(child, compilation);
         }
     }
@@ -1041,18 +1008,18 @@ public class CZECHJavaCompiler {
         List<Instruction> gotoInstructions = new ArrayList<>();
         List<Instruction> allBreakInstructions = new ArrayList<>();
 
-        //The conditions
+        // The conditions
         for (int i = 0; i < node.jjtGetNumChildren(); i += 2) {
-            //Else Statement
+            // Else Statement
             if (i == node.jjtGetNumChildren() - 1) {
                 ASTBlock block = (ASTBlock) node.jjtGetChild(i);
                 List<Instruction> breakInstructions = block(block, cycleStart, compilation);
                 allBreakInstructions.addAll(breakInstructions);
-                //If or else-if statement
+                // If or else-if statement
             } else {
                 Node child = simplifyExpression(node.jjtGetChild(i));
 
-                //If-expression skip block instructions
+                // If-expression skip block instructions
                 List<Instruction> endBlockInstructions = ifExpression(child, compilation);
                 evaluateIfExpression(child, compilation.getByteCode().getLastInstruction());
 
@@ -1060,37 +1027,27 @@ public class CZECHJavaCompiler {
                 List<Instruction> breakInstructions = block(block, cycleStart, compilation);
                 allBreakInstructions.addAll(breakInstructions);
 
-                //Unnecessary in the last branch
+                // Unnecessary in the last branch
                 if (i < node.jjtGetNumChildren() - 2) {
-                    //Creates goto instruction to the end of branching
+                    // Creates goto instruction to the end of branching
                     Instruction gotoInstruction = compilation.getByteCode().addInstruction(new Instruction(InstructionSet.GoTo, -1));
                     gotoInstructions.add(gotoInstruction);
                 }
 
-                //Change the compare instr. so it points to the end of the block
-                for (Instruction ebi : endBlockInstructions) {
-                    ebi.setOperand(0, compilation.getByteCode().getLastInstructionPosition() + 1);
-                }
-
-                continue;
+                // Change the compare instr. so it points to the end of the block
+                endBlockInstructions.forEach(ebi -> ebi.setOperand(0, compilation.getByteCode().getLastInstructionPosition() + 1));
             }
 
         }
 
-        //Go through all goto instruction and set them to the end
-        for (Instruction i : gotoInstructions) {
-            i.setOperand(0, compilation.getByteCode().getLastInstructionPosition() + 1);
-        }
-
+        // Go through all goto instruction and set them to the end
+        gotoInstructions.forEach(i -> i.setOperand(0, compilation.getByteCode().getLastInstructionPosition() + 1));
         return allBreakInstructions;
     }
 
     protected void whileStatement(ASTWhileStatement node, MethodCompilation compilation) throws CompilerException {
-
         Node expression = simplifyExpression(node.jjtGetChild(0));
-
         int whileExpressionPosition = compilation.getByteCode().getLastInstructionPosition() + 1;
-
         List<Instruction> endBlockInstructions = ifExpression(expression, compilation);
         evaluateIfExpression(expression, compilation.getByteCode().getLastInstruction());
 
@@ -1098,15 +1055,10 @@ public class CZECHJavaCompiler {
         List<Instruction> breakInstructions = block(block, whileExpressionPosition, compilation);
         endBlockInstructions.addAll(breakInstructions);
 
-        //Goto instruction that goes back to the beginning of the loop
+        // Goto instruction that goes back to the beginning of the loop
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.GoTo, whileExpressionPosition));
-
-        //Change the compare instr. so it points to the end of the block
-        for (Instruction ebi : endBlockInstructions) {
-            ebi.setOperand(0, compilation.getByteCode().getLastInstructionPosition() + 1);
-        }
-
-        return;
+        // Change the compare instr. so it points to the end of the block
+        endBlockInstructions.forEach(ebi -> ebi.setOperand(0, compilation.getByteCode().getLastInstructionPosition() + 1));
     }
 
     protected Instruction breakStatement(int cycleStart, MethodCompilation compilation) throws CompilerException {
@@ -1116,7 +1068,6 @@ public class CZECHJavaCompiler {
 
         Instruction goTo = new Instruction(InstructionSet.GoTo, -1);
         compilation.getByteCode().addInstruction(goTo);
-
         return goTo;
     }
 
@@ -1128,46 +1079,41 @@ public class CZECHJavaCompiler {
     }
 
     protected void evaluateIfExpression(Node node, Instruction lastInstruction) throws CompilerException {
-        //When it's single if expression we have to invert last member
+        // When it's single if expression we have to invert last member
         if (CompilerTypes.isRelationalExpression(node) || CompilerTypes.isEqualityExpression(node)) {
             lastInstruction.invert();
         }
     }
 
     protected void convertConditionalExpressionToBoolean(Node node, List<Instruction> ifInstructions, MethodCompilation compilation) throws CompilerException {
-
-        //Negate the last if
+        // Negate the last if
         evaluateIfExpression(node, compilation.getByteCode().getLastInstruction());
-
         //If we success setBytes variable to TRUE
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.PushInteger, 1));
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.GoTo, compilation.getByteCode().getLastInstructionPosition() + 3));
-        //Else setBytes it to false
+        // Else setBytes it to false
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.PushInteger, 0));
 
-        //Set end block instructions to go to false
-        for (Instruction instr : ifInstructions) {
-            instr.setOperand(0, compilation.getByteCode().getLastInstructionPosition());
-        }
-
+        // Set end block instructions to go to false
+        ifInstructions.forEach(instr -> instr.setOperand(0, compilation.getByteCode().getLastInstructionPosition()));
     }
 
-    //Traverse through the expression tree and simplify it so that the expression children are the immediate children
+    // Traverse through the expression tree and simplify it so that the expression children are the immediate children
     protected Node simplifyExpression(Node node) throws CompilerException {
-        //If it's arguments (even with one member, we want to keep it)
+        // If it's arguments (even with one member, we want to keep it)
         if (node instanceof ASTArguments || node instanceof ASTArraySuffix) {
             return node;
         } else if (node.jjtGetNumChildren() == 1) {
             return simplifyExpression(node.jjtGetChild(0));
         } else if (node.jjtGetNumChildren() > 1) {
-            //Go recursively through the children
+            // Go recursively through the children
             for (int i = 0; i < node.jjtGetNumChildren(); i++) {
                 Node child = simplifyExpression(node.jjtGetChild(i));
-                //Replace the old expression
+                // Replace the old expression
                 node.jjtAddChild(child, i);
             }
         }
-        //Return node if there are no more children
+        // Return node if there are no more children
         return node;
     }
 
@@ -1220,7 +1166,6 @@ public class CZECHJavaCompiler {
         if (currentClass.getSuperClass() == null) {
             throw new CompilerException("Calling super on top-object");
         }
-
         thisReference(compilation);
     }
 
@@ -1233,7 +1178,6 @@ public class CZECHJavaCompiler {
         }
 
         Variable var = compilation.getLocalVariable(name);
-
         if (!var.isInitialized()) {
             throw new CompilerException("Variable '" + name + "' is not initialized");
         }
@@ -1243,13 +1187,11 @@ public class CZECHJavaCompiler {
 
     protected void array(Node node, MethodCompilation compilation) throws CompilerException {
         ASTName child = (ASTName) node.jjtGetChild(0);
-
-        //Load variable reference on stack
+        // Load variable reference on stack
         variable(child, compilation);
 
         Type type = getTypeForExpression(child, compilation);
-
-        //Load index
+        // Load index
         Node arrayIndexExpression = simplifyExpression(node.jjtGetChild(1).jjtGetChild(0));
         evaluateExpression(arrayIndexExpression, compilation);
 
@@ -1266,7 +1208,7 @@ public class CZECHJavaCompiler {
         Node value = node.jjtGetChild(1);
         //+ -
         if (node instanceof ASTUnaryExpression) {
-            //Ignore plus
+            // Ignore plus
             if (operator instanceof ASTMinusOperator) {
                 Node additive = new ASTAdditiveExpression(node.getId());
                 ASTNumberLiteral zero = new ASTNumberLiteral(node.getId() + 1);
@@ -1280,9 +1222,8 @@ public class CZECHJavaCompiler {
                 expression(additive, compilation);
             }
 
-            //Negation
+            // Negation
         } else if (node instanceof ASTUnaryExpressionNotPlusMinus) {
-            //TODO: this might not work
             evaluateExpression(value, compilation);
         }
     }
@@ -1290,13 +1231,11 @@ public class CZECHJavaCompiler {
     protected void floatLiteral(Node node, MethodCompilation compilation) throws CompilerException {
         String value = ((ASTFloatLiteral) node).jjtGetValue().toString();
         int floatIndex = constantPool.addConstant(value);
-
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.PushFloat, floatIndex));
     }
 
     protected void booleanLiteral(Node node, MethodCompilation compilation) throws CompilerException {
         int value = 0;
-
         if (node instanceof ASTTrue) {
             value = 1;
         }
@@ -1309,40 +1248,38 @@ public class CZECHJavaCompiler {
 
     protected void charLiteral(Node node, MethodCompilation compilation) throws CompilerException {
         String value = ((ASTCharLiteral) node).jjtGetValue().toString();
-        //Trim the parenthesis
+        // Trim the parenthesis
         value = value.substring(1, value.length() - 1);
         char charValue = 0;
 
         if (value.length() == 1) {
             charValue = value.charAt(0);
         }
-
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.PushInteger, (int) charValue));
     }
 
     protected void stringLiteral(Node node, MethodCompilation compilation) throws CompilerException {
         String value = ((ASTStringLiteral) node).jjtGetValue().toString();
-        //Have to trim the parenthesis
+        // Have to trim the parenthesis
         value = value.substring(1, value.length() - 1);
 
         int constantIndex = constantPool.addConstant(value);
-        //Push value on stack, it will create array of chars
+        // Push value on stack, it will create array of chars
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.PushConstant, constantIndex));
 
-        //Create new String
+        // Create new String
         int index = constantPool.addConstant(STRING_CLASS);
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.New, index));
 
-        //Setup constructor String(char[]) which will take characters as argument
+        // Setup constructor String(char[]) which will take characters as argument
         List<Type> argTypes = new ArrayList<>();
         argTypes.add(Types.CharArray());
 
-        //New string constructor
+        // New string constructor
         String methodDescriptor = Method.getDescriptor(STRING_CLASS, argTypes, STRING_CLASS);
         int constructorIndex = constantPool.addConstant(methodDescriptor);
 
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.InvokeVirtual, constructorIndex));
-
     }
 
     protected void getField(ASTName node, MethodCompilation compilation) throws CompilerException {
@@ -1361,7 +1298,7 @@ public class CZECHJavaCompiler {
         Node child = node.jjtGetChild(0);
         Node suffix = node.jjtGetChild(1);
 
-        //Allocation of primitives array
+        // Allocation of primitives array
         if (suffix instanceof ASTArraySuffix) {
             Node expression = simplifyExpression(suffix.jjtGetChild(0));
 
@@ -1371,29 +1308,23 @@ public class CZECHJavaCompiler {
                 throw new CompilerException("Expected number type in size of allocation");
             }
 
-            //Push size on stack
+            // Push size on stack
             expression(expression, compilation);
 
             compilation.getByteCode().addInstruction(new Instruction(InstructionSet.NewArray));
 
-            //Allocation of object
+            // Allocation of object
         } else if (suffix instanceof ASTArguments) {
             String name = ((ASTName) child).jjtGetValue().toString().toLowerCase();
-
-            //Constructor arguments
+            // Constructor arguments
             ASTArguments args = (ASTArguments) suffix;
-
-            //Push arguments on the stack
+            // Push arguments on the stack
             arguments(args, compilation);
-
-            //Get types of arguments (whether they are expression, variables or method call)
+            // Get types of arguments (whether they are expression, variables or method call)
             List<Type> argTypes = getArgumentsTypes(args, compilation);
-
-            //Create new object and push on stack
+            // Create new object and push on stack
             newObject(name, argTypes, compilation);
-
         } else {
-            //TODO: Or float
             throw new UnsupportedOperationException();
         }
     }
@@ -1401,16 +1332,13 @@ public class CZECHJavaCompiler {
     protected void newObject(String className, List<Type> args, MethodCompilation compilation) throws CompilerException {
         int index = constantPool.addConstant(className);
         compilation.getByteCode().addInstruction(new Instruction(InstructionSet.New, index));
-
         invokeConstructor(className, args, compilation);
     }
 
     protected void invokeConstructor(String className, List<Type> args, MethodCompilation compilation) throws CompilerException {
         try {
             Class objClass = classPool.lookupClass(className);
-
             invokeMethod(objClass, className, args, false, true, compilation);
-
         } catch (LookupException e) {
             throw new CompilerException(e.getMessage());
         }
@@ -1421,22 +1349,16 @@ public class CZECHJavaCompiler {
     }
 
     protected void invokeMethod(Class objClass, String name, List<Type> argTypes, boolean staticCall, boolean specialCall, MethodCompilation compilation) throws CompilerException {
-
-        //Get method based on it's name and arguments
+        // Get method based on it's name and arguments
         Method method = new Method(name, argTypes, objClass.getClassName());
         String methodDescriptor = method.getDescriptor();
 
         try {
-            //We try to lookup the method
+            // We try to lookup the method
             method = objClass.lookupMethod(methodDescriptor, this.classPool);
-
             int methodIndex = constantPool.addConstant(methodDescriptor);
 
-            //We can't invoke non-static method statically
-            // (We can invoke static method non-statically though
-            /*if (staticCall && !method.isStaticMethod()) {
-                throw new CompilerException("Trying to invoke non-static method with a static call");
-            }*/
+            // We can't invoke non-static method statically
             if (specialCall) {
                 compilation.getByteCode().addInstruction(new Instruction(InstructionSet.InvokeSpecial, methodIndex));
             } else if (method.isStaticMethod()) {
@@ -1444,11 +1366,9 @@ public class CZECHJavaCompiler {
             } else {
                 compilation.getByteCode().addInstruction(new Instruction(InstructionSet.InvokeVirtual, methodIndex));
             }
-
         } catch (LookupException e) {
             throw new CompilerException(e.getMessage());
         }
-
     }
 
     protected List<Instruction> ifExpression(Node node, MethodCompilation compilation) throws CompilerException {
@@ -1474,7 +1394,7 @@ public class CZECHJavaCompiler {
 
             type = getTypeForExpression(child, compilation);
 
-            //Convert first member to float
+            // Convert first member to float
             if (lastType != null) {
                 if (lastType == Types.Number() && type == Types.Float()) {
                     compilation.getByteCode().addInstruction(new Instruction(InstructionSet.IntegerToFloat));
@@ -1485,8 +1405,7 @@ public class CZECHJavaCompiler {
             expression(child, compilation);
 
             if (i != -1) {
-
-                //Convert second member to float
+                // Convert second member to float
                 if (lastType == Types.Float() && type == Types.Number()) {
                     compilation.getByteCode().addInstruction(new Instruction(InstructionSet.IntegerToFloat));
                     type = Types.Float();
@@ -1499,11 +1418,9 @@ public class CZECHJavaCompiler {
                 }
 
                 Node operator = node.jjtGetChild(i);
-
                 InstructionSet instruction = null;
-
                 if (type == Types.Float()) {
-                    //Puts 0 if equal -1 if less and 1 if greater
+                    // Puts 0 if equal -1 if less and 1 if greater
                     compilation.getByteCode().addInstruction(new Instruction(InstructionSet.FloatCompare));
 
                     if (operator instanceof ASTEqualOperator) {
@@ -1560,7 +1477,6 @@ public class CZECHJavaCompiler {
 
         for (int i = 0; i < node.jjtGetNumChildren(); i += 1) {
             Node child = node.jjtGetChild(i);
-
             if ((CompilerTypes.isOrExpression(node) && CompilerTypes.isOrExpression(child)) || (CompilerTypes.isAndExpression(node) && CompilerTypes.isAndExpression(child))) {
                 merged.addAll(mergeConditionals(child));
             } else {
@@ -1572,33 +1488,27 @@ public class CZECHJavaCompiler {
     }
 
     protected List<Instruction> orExpression(ASTConditionalOrExpression node, MethodCompilation compilation) throws CompilerException {
-
-        //Instructions that should go to execution block if passed
+        // Instructions that should go to execution block if passed
         List<Instruction> toBlockInstructions = new ArrayList<>();
-
-        //Indicates whether last child is an nested AND
+        // Indicates whether last child is an nested AND
         boolean lastChildAnd = false;
-
-        //Instruction that will skip the execution block if passed
+        // Instruction that will skip the execution block if passed
         List<Instruction> endBlockInstruction = new ArrayList<>();
-
-        //Merge together same conditionals for easier computation (e.g. ( x or ( y or z) )
+        // Merge together same conditionals for easier computation (e.g. ( x or ( y or z) )
         List<Node> children = mergeConditionals(node);
 
         for (int i = 0; i < children.size(); i += 2) {
             Node child = children.get(i);
-
             List<Instruction> childInstructions = ifExpression(child, compilation);
 
-            //In nested AND expression
+            // In nested AND expression
             if (CompilerTypes.isAndExpression(child)) {
 
-                //It's the last, every instruction leads to the end
+                // It's the last, every instruction leads to the end
                 if (i == node.jjtGetNumChildren() - 1) {
                     lastChildAnd = true;
                     endBlockInstruction.addAll(childInstructions);
-
-                    //It's not the last, every instruction goes to next condition. Last instruction goes to block if passed
+                    // It's not the last, every instruction goes to next condition. Last instruction goes to block if passed
                 } else {
                     Iterator<Instruction> itr = childInstructions.iterator();
 
@@ -1614,27 +1524,24 @@ public class CZECHJavaCompiler {
                     }
                 }
 
-                //It's simple condition
+                // It's simple condition
             } else {
                 toBlockInstructions.addAll(childInstructions);
             }
         }
 
         Iterator<Instruction> itr = toBlockInstructions.iterator();
-
         while (itr.hasNext()) {
             Instruction instruction = itr.next();
-
-            //Not last or the AND is the last
+            // Not last or the AND is the last
             if (itr.hasNext() || lastChildAnd) {
-                //Go to the code
+                // Go to the code
                 instruction.setOperand(0, compilation.getByteCode().getLastInstructionPosition() + 1);
             } else {
-                //Invert last instruction and send it to the end
+                // Invert last instruction and send it to the end
                 instruction.invert();
                 endBlockInstruction.add(instruction);
             }
-
         }
 
         return endBlockInstruction;
@@ -1642,28 +1549,24 @@ public class CZECHJavaCompiler {
 
     protected List<Instruction> andExpression(ASTConditionalAndExpression node, MethodCompilation compilation) throws CompilerException {
         List<Instruction> instructions = new ArrayList<>();
-
-        //Instruction that will skip the execution block if passed
+        // Instruction that will skip the execution block if passed
         List<Instruction> endBlockInstruction = new ArrayList<>();
-
-        //Merge together same conditionals for easier computation (e.g. ( x and ( y and z) )
+        // Merge together same conditionals for easier computation (e.g. ( x and ( y and z) )
         List<Node> children = mergeConditionals(node);
 
         for (int i = 0; i < children.size(); i += 2) {
             Node child = children.get(i);
             List<Instruction> childInstructions = ifExpression(child, compilation);
-
-            //In nested AND expression
+            // In nested AND expression
             if (CompilerTypes.isOrExpression(child)) {
                 endBlockInstruction.addAll(childInstructions);
             } else {
                 instructions.addAll(childInstructions);
             }
-
         }
 
         for (Instruction instruction : instructions) {
-            //Invert instruction and send it to end block
+            // Invert instruction and send it to end block
             instruction.invert();
             endBlockInstruction.add(instruction);
         }
@@ -1672,29 +1575,23 @@ public class CZECHJavaCompiler {
     }
 
     protected void arithmeticExpression(Node node, MethodCompilation compilation) throws CompilerException {
-        Node first = node.jjtGetChild(0);
-
         Type expressionType = getTypeForExpression(node, compilation);
 
         for (int i = -1; i < node.jjtGetNumChildren(); i += 2) {
-
             Node child = node.jjtGetChild(i + 1);
             expression(child, compilation);
 
             Type type = getTypeForExpression(child, compilation);
-
-            //Expression type == float
+            // Expression type == float
             if (type != expressionType && type == Types.Float()) {
-                //Convert value on stack
+                // Convert value on stack
                 compilation.getByteCode().addInstruction(new Instruction(InstructionSet.IntegerToFloat));
             }
 
             InstructionSet instruction = null;
-
-            //Have two values on stack
+            // Have two values on stack
             if (i != -1) {
                 Node operator = node.jjtGetChild(i);
-
                 if (operator instanceof ASTPlusOperator) {
                     if (expressionType == Types.Number()) {
                         instruction = InstructionSet.AddInteger;
@@ -1735,32 +1632,28 @@ public class CZECHJavaCompiler {
                 compilation.getByteCode().addInstruction(new Instruction(instruction));
             }
         }
-
     }
 
     protected void localVariableDeclaration(ASTLocalVariableDeclaration node, MethodCompilation compilation) throws CompilerException {
-        //First child is Type
+        // First child is Type
         Type type = type((ASTType) node.jjtGetChild(0));
 
-        //Second and others (There can be more fields declared) are names
+        // Second and others (There can be more fields declared) are names
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             ASTVariableDeclarator declarator = (ASTVariableDeclarator) node.jjtGetChild(i);
-
             ASTName nameNode = ((ASTName) declarator.jjtGetChild(0));
             String name = nameNode.jjtGetValue().toString();
-
             int position = compilation.addLocalVariable(name, type);
 
             if (position == -1) {
                 throw new CompilerException("Variable '" + name + "' has been already declared");
             }
 
-            //We also assigned value
+            // We also assigned value
             if (declarator.jjtGetNumChildren() > 1) {
                 Node value = declarator.jjtGetChild(1);
                 variableAssignment(declarator, value, compilation);
             }
         }
     }
-
 }

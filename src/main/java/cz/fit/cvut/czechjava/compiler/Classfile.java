@@ -3,7 +3,8 @@ package cz.fit.cvut.czechjava.compiler;
 import java.io.*;
 
 /**
- * Created by tomaskohout on 12/13/15.
+ *
+ * @author Jakub
  */
 public class Classfile {
 

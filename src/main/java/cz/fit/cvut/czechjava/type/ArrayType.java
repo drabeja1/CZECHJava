@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.type;
 
 public class ArrayType extends Type {
 
-    Type element;
+    private final Type element;
 
     ArrayType(Type type) {
         element = type;
@@ -12,6 +12,9 @@ public class ArrayType extends Type {
         return element;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return element + "[]";
