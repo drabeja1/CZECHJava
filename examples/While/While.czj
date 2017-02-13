@@ -1,0 +1,21 @@
+startuj proved
+
+trida Udelatko {
+
+    provadej() {
+        necht cislo i = 0 proved
+
+        opakuj (i < 10) {
+            Konzole.vypis(i) proved
+            plati (1 == 1) {
+                i = i + 2 proved
+                jdidal proved
+            }
+            i = i + 1 proved
+        }
+
+        dechrobok proved
+    }
+}
+
+konci proved

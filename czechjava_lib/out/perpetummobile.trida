@@ -1,0 +1,23 @@
+????
+3
+implementuj metodu naHodnePismenek()
+hodnepismenek
+hodnepismenek.hodnepismenek:pismenko[]
+perpetummobile
+
+0
+2
+perpetummobile.nahodnepismenek
+1
+0
+4
+ldc 0 
+new 1 
+invokevirtual 2 
+areturn 
+perpetummobile.perpetummobile
+1
+0
+2
+aload 0 
+areturn 0 

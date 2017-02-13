@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter;
 
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
-import cz.fit.cvut.czechjava.compiler.Class;
+import cz.fit.cvut.czechjava.compiler.model.Class;
 
 /**
  *
@@ -28,6 +28,9 @@ public class InterpretedClass extends Class {
         this.classPoolAddress = classPoolAddress;
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public InterpretedMethod lookupMethod(String descriptor, ClassPool classPool) throws LookupException {
         return (InterpretedMethod) super.lookupMethod(descriptor, classPool);

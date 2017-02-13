@@ -1,0 +1,100 @@
+startuj proved
+
+trida Reseni {
+    necht cislo pocetPromennych proved
+    necht cislo[] ohodnoceni proved
+
+    Reseni(Reseni r){
+        toto(r.pocetPromennych) proved
+
+        necht cislo i = 0 proved
+        opakuj (i < toto.pocetPromennych){
+            toto.ohodnoceni[i] = r.ohodnoceni[i] proved
+            i = i + 1 proved
+        }
+    }
+
+    Reseni(cislo pocetPromennych){
+        toto.pocetPromennych = pocetPromennych proved
+        toto.ohodnoceni = vytvor jeto[pocetPromennych] proved
+    }
+
+    nastavJetotak(cislo indexPromenne){
+        toto.ohodnoceni[indexPromenne] = 1 proved
+    }
+
+    nastavNenitotak(cislo indexPromenne){
+        toto.ohodnoceni[indexPromenne] = -1 proved
+    }
+
+    cislo dej(cislo indexPromenne){
+        vrat toto.ohodnoceni[indexPromenne] proved
+    }
+    cislo dejDalsi(){
+        necht cislo i = 0 proved
+        opakuj (i < toto.pocetPromennych){
+            necht cislo h = toto.ohodnoceni[i] proved
+
+            plati (h == 0){
+                vrat i proved
+            }
+            i = i + 1 proved
+        }
+
+        vrat -1 proved
+    }
+
+    //Vraci 1 - jetotak, -1 nenitotak, 0 nerozhodnuto
+    cislo dejVysledek(Klauzule k) {
+        necht cislo i = 0 proved
+        necht jeto nenastaveno = nenitotak proved
+
+        opakuj (i < toto.pocetPromennych) {
+            necht cislo promenna = k.promenne[i] proved
+            necht cislo ohodnoceni = dej(i) proved
+
+            plati (promenna != 0) {
+                plati (ohodnoceni != 0) {
+                    // Jak je jeden clen vyhodnocen jetotak -  napr. x1' a ohodnoceni nenitotak a nebo x1 a ohodnoceni true
+                    // Cela klauzule je true
+                    plati (promenna == ohodnoceni) {
+                        vrat 1 proved
+                    }
+                } jinak {
+                    nenastaveno = jetotak proved
+                }
+            }
+
+            i = i + 1 proved
+        }
+
+        // Nezbyli nam nenastavene promenne, musi to byt nenitotak
+        plati (nenastaveno == nenitotak){
+            vrat -1 proved
+        }
+        // Nerozhodnoto
+        vrat 0 proved
+    }
+
+    HodnePismenek naHodnePismenek(){
+        necht pismenko[] c = vytvor pismenko[toto.pocetPromennych] proved
+        necht cislo i = 0 proved
+        opakuj (i < toto.pocetPromennych){
+            necht cislo h = toto.ohodnoceni[i] proved
+
+            plati (h == -1){
+                c[i] = '0' proved
+            } neboi (h == 1) {
+                c[i] = '1' proved
+            } jinak {
+                c[i] = '?' proved
+            }
+
+            i = i + 1 proved
+        }
+
+        vrat vytvor HodnePismenek(c) proved
+    }
+}
+
+konci proved 

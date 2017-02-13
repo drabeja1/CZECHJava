@@ -1,0 +1,52 @@
+????
+6
+c
+hodnepismenek.napismenko
+cislocele.chararraytoint:pismenko[]
+cislocele.inttochararray:cislo
+hodnepismenek
+hodnepismenek.hodnepismenek:pismenko[]
+cislocele
+perpetummobile
+1
+c:cislo
+5
+cislocele.cislocele:cislo
+2
+0
+5
+aload 0 
+iload 1 
+putfield 0 
+aload 0 
+areturn 
+cislocele.preved:hodnepismenek
+2
+0
+5
+aload 1 
+invokevirtual 1 
+aload 0 
+invokestatic 2 
+ireturn 
+cislocele.nahodnepismenek
+2
+0
+9
+aload 0 
+getfield 0 
+aload 0 
+invokestatic 3 
+astore 1 
+aload 1 
+new 4 
+invokespecial 5 
+areturn 
+cislocele.chararraytoint:pismenko[]
+2
+1
+0
+cislocele.inttochararray:cislo
+2
+1
+0

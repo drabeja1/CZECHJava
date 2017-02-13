@@ -1,0 +1,57 @@
+startuj proved
+
+trida Udelatko {
+     provadej() {
+        necht A a proved
+        necht B b proved
+        necht X x proved
+        necht Y y proved
+        necht Z z proved
+
+        a = vytvor A() proved
+        b = vytvor B() proved
+
+        x = vytvor X() proved
+        z = vytvor Z() proved
+
+        // Test jestli se zavola X Y z B nebo blizsi X Z ze superclass
+        a.foo(x, z) proved
+        b.foo(x, z) proved
+    }
+}
+
+trida X {
+  print() {
+    Konzole.vypis("   I'm X") proved
+  }
+}
+
+trida Y {
+  print() {
+    Konzole.vypis("   I'm Y") proved
+  }
+}
+
+trida Z dedic Y {
+  print() {
+    Konzole.vypis("   I'm Z") proved
+  }
+}
+
+trida A {
+  foo(X x, Z z) {
+    Konzole.vypis("In A::foo(X,Z)") proved
+    x.print() proved
+    z.print() proved
+  }
+}
+
+trida B dedic A {
+  foo(X x, Y y) {
+    Konzole.vypis("In B::foo(X,Y)") proved
+    x.print() proved
+    y.print() proved
+  }
+}
+
+konci proved

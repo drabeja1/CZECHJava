@@ -1,0 +1,233 @@
+startuj proved
+
+trida Resic {
+    necht CNF cnf proved
+
+    Resic(CNF cnf){
+        toto.cnf = cnf proved
+    }
+
+    provadej() {
+        necht jeto res = vyres() proved
+
+        plati (res == jetotak) {
+             Konzole.vypis("Resitelne") proved
+        } jinak {
+             Konzole.vypis("Neresitelne") proved
+        }
+    }
+
+    jeto vyres() {
+        necht Reseni reseni = vytvor Reseni(toto.cnf.pocetPromennych) proved
+
+        necht jeto resitelne = vyres(reseni) proved
+
+        vrat resitelne proved
+    }
+
+    jeto vyres(Reseni reseni) {
+        necht Reseni nove proved
+        necht cislo vseci = ohodnotVseci(reseni) proved
+
+        // Vsechny klauzule jsou splnene
+        plati (vseci == 1){
+             Konzole.vypis("Konecne reseni: ") proved
+             Konzole.vypis(reseni.naHodnePismenek()) proved
+            vrat jetotak proved
+        // Aspon jedna klauzule je nesplnena
+        } neboi (vseci == -1){
+           vrat nenitotak proved
+        }
+
+        //Zkusime najit ciste promenne
+        necht Reseni ciste = najdiPromenneCiste(reseni) proved
+        plati (ciste != nictam){
+            // Konzole.vypis("Promenne ciste: ") proved
+            vrat vyres(ciste) proved
+        }
+
+        //Zkusime najit unit clause
+        necht cislo promennaRazovita = najdiKlauzuliRazovitu(reseni) proved
+        plati (promennaRazovita != 0){
+            nove = vytvor Reseni(reseni) proved
+
+            necht cislo indexRazovity proved
+            plati (promennaRazovita < 0){
+                indexRazovity = (promennaRazovita * -1) -1 proved
+                nove.nastavNenitotak(indexRazovity) proved
+            } jinak {
+                indexRazovity = promennaRazovita - 1 proved
+                nove.nastavJetotak(indexRazovity) proved
+            }
+
+            // Konzole.vypis("Klauzule razovita: ") proved
+            vrat vyres(nove) proved
+        }
+
+        //Vezmeme dalsi v rade
+        necht cislo index = reseni.dejDalsi() proved
+
+        nove = vytvor Reseni(reseni) proved
+        nove.nastavNenitotak(index) proved
+
+        plati (vyres(nove) == jetotak){
+           vrat jetotak proved
+        }
+
+        //Zkusime nastavit jetotak
+        nove = vytvor Reseni(reseni) proved
+        nove.nastavJetotak(index) proved
+
+        vrat vyres(nove) proved
+    }
+
+    cislo ohodnotVseci(Reseni r){
+        necht cislo i = 0 proved
+
+        //Ohodnoceni vsech klauzuli
+        opakuj (i < toto.cnf.pocetKlauzuli){
+            necht Klauzule k = toto.cnf.klauzule[i] proved
+            necht cislo v = r.dejVysledek(k) proved
+
+            //Pokud je aspon jeden nenitotak, vsichni jsou nenitotak
+            plati ( v == -1 ) {
+                vrat -1 proved
+            //Pokud jedna klauzule nerozhodnuta, vsichni jsou nerozhodnuti
+            } neboi (v == 0) {
+                vrat 0 proved
+            }
+
+            i = i + 1 proved
+        }
+
+        vrat 1 proved
+    }
+
+    //Najde promenne ktere se v cnf vyskytuji pouze positivni, negativni a nebo vubec
+    Reseni najdiPromenneCiste(Reseni r){
+        necht cislo i = 0 proved
+        necht cislo[] kandydati = vytvor cislo[toto.cnf.pocetPromennych] proved
+        necht cislo kandydat proved
+        necht cislo vyluc_konstanta = -2 proved
+
+        opakuj (i < toto.cnf.pocetKlauzuli){
+            necht Klauzule k = toto.cnf.klauzule[i] proved
+            necht cislo v = r.dejVysledek(k) proved
+            //Ignorujeme jiz vyresene klauzule
+            plati (v != 1){
+                necht cislo j = 0 proved
+
+                opakuj (j < k.pocet){
+                    necht cislo p = k.promenne[j] proved
+                    kandydat = kandydati[j] proved
+
+                    //Pokud promenna neni stejna jako nektera predchozi a je definovana v klauzuli
+                    //Pokud uz nebyla vyloucena
+                    //Pokud uz neni v reseni
+
+                    plati (kandydat != vyluc_konstanta taky p != kandydat taky p != 0){
+                        //Pokud jeste nebyl definovan
+                        plati (kandydat == 0){
+                            kandydati[j] = p proved
+                        //Pokud uz byl, vyluc
+                        } jinak {
+                            kandydati[j] = vyluc_konstanta proved
+                        }
+                    }
+
+                    j = j + 1 proved
+                }
+            }
+            i = i + 1 proved
+        }
+
+        i = 0 proved
+        necht Reseni nove = vytvor Reseni(r) proved
+        necht jeto nalezeno = nenitotak proved
+
+        opakuj  (i < toto.cnf.pocetPromennych){
+            necht cislo ohodnoceni = r.dej(i) proved
+
+            plati (ohodnoceni == 0){
+                kandydat = kandydati[i] proved
+
+                // Vsechny vyskyty promenne jsou jetotak
+                plati (kandydat == 1) {
+                    nove.nastavJetotak(i) proved
+                    nalezeno = jetotak proved
+                // Vsechny vyskyty promenne jsou nenitotak
+                } neboi (kandydat == -1) {
+                    nove.nastavNenitotak(i) proved
+                    nalezeno = jetotak proved
+                // Promenna se nikdy nevyskytla, tak ji nastavime na nenitotak
+                } neboi (kandydat == 0) {
+                    nove.nastavNenitotak(i) proved
+                    nalezeno = jetotak proved
+                }
+            }
+            i = i + 1 proved
+        }
+
+        plati (nalezeno == jetotak){
+            vrat nove proved
+        }
+
+        vrat nictam proved
+    }
+
+    // Unit clause
+    cislo najdiKlauzuliRazovitu(Reseni r) {
+        necht cislo i = 0 proved
+
+        opakuj (i < toto.cnf.pocetKlauzuli) {
+            necht Klauzule k = toto.cnf.klauzule[i] proved
+            necht cislo v = r.dejVysledek(k) proved
+
+            // Klauzule neni rozhodnuta
+            plati (v == 0) {
+                necht cislo j = 0 proved
+                necht cislo nevyhodnocenyIndex = -1 proved
+                opakuj (j < k.pocet) {
+                    necht cislo promenna = k.promenne[j] proved
+                    necht cislo ohodnoceni = r.dej(j) proved
+
+                    plati (promenna != 0) {
+                        //Promenna jeste neni rozhodnuta
+                        plati (ohodnoceni == 0) {
+                            plati (nevyhodnocenyIndex == -1) {
+                                nevyhodnocenyIndex = j proved
+                            } jinak {
+                                //Vic jak jeden nevyhodnoceny index, neni to unit clause
+                                nevyhodnocenyIndex = -1 proved
+                                stuj proved
+                            }
+                        }
+                    }
+
+                    j = j + 1 proved
+                }
+
+                plati (nevyhodnocenyIndex != -1) {
+                    promenna = k.promenne[nevyhodnocenyIndex] proved
+
+                    //Index zacina od 1
+                    nevyhodnocenyIndex = nevyhodnocenyIndex + 1 proved
+
+                    // Vrat zaporny index pro negaci
+                    plati (promenna < 0){
+                        vrat nevyhodnocenyIndex * (0 - 1) proved
+                    // kladny index pro normalni promennou
+                    } jinak {
+                        vrat nevyhodnocenyIndex proved
+                    }
+                }
+            }
+
+            i = i + 1 proved
+        }
+
+        vrat 0 proved
+    }
+}
+
+konci proved 

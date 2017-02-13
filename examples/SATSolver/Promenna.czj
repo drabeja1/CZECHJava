@@ -1,0 +1,23 @@
+startuj proved
+
+trida Promenna {
+    necht cislo index proved
+    necht bul negace proved
+
+    Promenna(cislo index) {
+        toto.negace = nenitotak proved
+        toto.index = index proved
+
+        plati (index < 0){
+            toto.index = index * (0-1) proved
+            toto.negace = jetotak proved
+        }
+    }
+
+    HodnePismenek naHodnePismenek() {
+        necht cisloCele c = vytvor CisloCele(toto.index) proved
+        vrat c.naHodnePismenek() proved
+    }
+}
+
+konci proved 

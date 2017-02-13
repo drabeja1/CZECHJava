@@ -1,0 +1,134 @@
+????
+14
+perpetummobile.perpetummobile
+nictam
+hodnepismenek
+hodnepismenek.hodnepismenek:pismenko[]
+konzole.vypis:hodnepismenek
+perpetummobile.nahodnepismenek
+hodnepismenek.napismenko
+konzole.vypis:pismenko[]
+konzole.print:cislo
+konzole.print:desetinne
+konzole.print:pismenko[]
+konzole.print:pismenko
+jetotak
+nenitotak
+konzole
+perpetummobile
+0
+12
+konzole.vypis:perpetummobile
+3
+0
+16
+aload 1 
+ipush 0 
+if_icmpne 9 
+ldc 1 
+new 2 
+invokevirtual 3 
+ipush 0 
+invokestatic 4 
+goto 15 
+aload 1 
+invokevirtual 5 
+astore 2 
+aload 2 
+ipush 0 
+invokestatic 4 
+return 
+konzole.vypis:hodnepismenek
+3
+0
+16
+aload 1 
+ipush 0 
+if_icmpne 9 
+ldc 1 
+new 2 
+invokevirtual 3 
+ipush 0 
+invokestatic 4 
+goto 15 
+aload 1 
+invokevirtual 6 
+astore 2 
+aload 2 
+ipush 0 
+invokestatic 7 
+return 
+konzole.vypis:cislo
+2
+0
+4
+iload 1 
+aload 0 
+invokestatic 8 
+return 
+konzole.vypis:desetinne
+2
+0
+4
+fload 1 
+aload 0 
+invokestatic 9 
+return 
+konzole.vypis:pismenko[]
+2
+0
+4
+aload 1 
+aload 0 
+invokestatic 10 
+return 
+konzole.vypis:pismenko
+2
+0
+4
+iload 1 
+aload 0 
+invokestatic 11 
+return 
+konzole.vypis:jeto
+2
+0
+15
+iload 1 
+ipush 1 
+if_icmpne 9 
+ldc 12 
+new 2 
+invokevirtual 3 
+ipush 0 
+invokestatic 4 
+goto 14 
+ldc 13 
+new 2 
+invokevirtual 3 
+ipush 0 
+invokestatic 4 
+return 
+konzole.print:pismenko[]
+2
+1
+0
+konzole.print:cislo
+2
+1
+0
+konzole.print:desetinne
+2
+1
+0
+konzole.print:pismenko
+2
+1
+0
+konzole.konzole
+1
+0
+3
+aload 0 
+invokevirtual 0 
+areturn 0 

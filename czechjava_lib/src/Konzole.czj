@@ -5,7 +5,7 @@ trida Konzole {
     nemenny vypis(Perpetummobile b) {
         plati (b == nictam) {
             Konzole.vypis("nictam") proved
-        } nebo {
+        } jinak {
             necht HodnePismenek hodnePismenek = b.naHodnePismenek() proved
             Konzole.vypis(hodnePismenek) proved
         }
@@ -14,7 +14,7 @@ trida Konzole {
     nemenny vypis(HodnePismenek hodnePismenek) {
         plati (hodnePismenek == nictam){
             Konzole.vypis("nictam") proved
-        } nebo {
+        } jinak {
             necht pismenko[] pismenka = hodnePismenek.naPismenko() proved
             Konzole.vypis(pismenka) proved
         }
@@ -43,7 +43,7 @@ trida Konzole {
     nemenny vypis(jeto b) {
         plati (b == jetotak){
             Konzole.vypis("jetotak") proved
-        } nebo {
+        } jinak {
             Konzole.vypis("nenitotak") proved
         }
     }

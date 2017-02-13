@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.interpreter;
 
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
-import cz.fit.cvut.czechjava.compiler.Class;
+import cz.fit.cvut.czechjava.compiler.model.Class;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,0 +1,67 @@
+startuj proved
+
+trida Udelatko {
+     provadej() {
+        necht A a proved
+        necht B b proved
+        necht X x proved
+        necht Y y proved
+        necht Z z proved
+
+        a = vytvor A() proved
+        x = vytvor X() proved
+        y = vytvor Y() proved
+        a.foo(x, y) proved
+
+        a = vytvor B() proved
+        x = vytvor X() proved
+        y = vytvor Z() proved
+        a.foo(x, y) proved
+
+        b = vytvor B() proved
+        x = vytvor X() proved
+        y = vytvor Z() proved
+        b.foo(x, y) proved
+
+        b = vytvor B() proved
+        x = vytvor X() proved
+        z = vytvor Z() proved
+        b.foo(x, z) proved
+    }
+}
+
+trida X {
+  print() {
+    Konzole.vypis("   I'm X") proved
+  }
+}
+
+trida Y {
+  print() {
+    Konzole.vypis("   I'm Y") proved
+  }
+}
+
+trida Z dedic Y {
+  print() {
+    Konzole.vypis("   I'm Z") proved
+  }
+}
+
+trida A {
+  foo(X x, Y y) {
+    Konzole.vypis("In A::foo(X,Y)") proved
+    x.print() proved
+    y.print() proved
+  }
+}
+
+trida B dedic A {
+  foo(X x, Z y) {
+    Konzole.vypis("In B::foo(X,Z)") proved
+    x.print() proved
+    y.print() proved
+  }
+}
+
+konci proved

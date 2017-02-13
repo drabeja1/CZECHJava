@@ -67,7 +67,7 @@ trida HodnePismenek {
                 pocet = pocet + 1 proved
                 // reset
                 bufr.vyprazdni() proved
-            } nebo {
+            } jinak {
                 bufr.pridej(toto.pismenkoi[i]) proved
             }
             i = i + 1 proved

@@ -2,8 +2,8 @@ package cz.fit.cvut.czechjava.interpreter;
 
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
-import cz.fit.cvut.czechjava.compiler.ConstantPool;
-import cz.fit.cvut.czechjava.compiler.Field;
+import cz.fit.cvut.czechjava.compiler.model.ConstantPool;
+import cz.fit.cvut.czechjava.compiler.model.Field;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.memory.HeapItem;
@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
  * @author Jakub
  */
 public class Debugger {
+
     /**
      * Logger
      */
@@ -62,11 +63,9 @@ public class Debugger {
     }
 
     public static void printString(Object obj) {
-
-        //TODO: call naHodnePismenek somehow?
         try {
             InterpretedClass clazz = obj.loadClass(classPool);
-            int fieldPos = clazz.lookupField("chachari");
+            int fieldPos = clazz.lookupField("pismneka");
             StackValue ref = obj.getField(fieldPos);
             char[] str = Converter.arrayToCharArray(heap.loadArray(ref));
             System.out.println("{" + clazz.getClassName() + "} = '" + new String(str) + "'");
@@ -77,9 +76,7 @@ public class Debugger {
     }
 
     public static void print(HeapItem heapObj, int indent) {
-
         indent += INDENTATION;
-
         if (heapObj instanceof Object) {
             Object obj = (Object) heapObj;
             try {

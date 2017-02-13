@@ -1,0 +1,15 @@
+startuj proved
+
+trida CNF {
+    necht Klauzule[] klauzule proved
+    necht cislo pocetPromennych proved
+    necht cislo pocetKlauzuli proved
+
+    CNF(Klauzule[] klauzule, cislo pocetPromennych, cislo pocetKlauzuli){
+        toto.klauzule = klauzule proved
+        toto.pocetPromennych = pocetPromennych proved
+        toto.pocetKlauzuli = pocetKlauzuli proved
+    }
+}
+
+konci proved 

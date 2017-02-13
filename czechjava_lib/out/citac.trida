@@ -1,0 +1,74 @@
+????
+8
+perpetummobile.perpetummobile
+hodnepismenek.napismenko
+citac.openreader:pismenko[]
+readeraddress
+citac.readline:cislo
+hodnepismenek
+hodnepismenek.hodnepismenek:pismenko[]
+citac.closereader:cislo
+citac
+perpetummobile
+1
+readeraddress:cislo
+7
+citac.otevri:hodnepismenek
+3
+0
+9
+aload 1 
+invokevirtual 1 
+astore 2 
+aload 0 
+aload 2 
+aload 0 
+invokevirtual 2 
+putfield 3 
+return 
+citac.ctiradek
+2
+0
+14
+aload 0 
+getfield 3 
+aload 0 
+invokevirtual 4 
+astore 1 
+aload 1 
+ipush 0 
+if_icmpeq 12 
+aload 1 
+new 5 
+invokespecial 6 
+areturn 
+ipush 0 
+areturn 
+citac.zavri
+1
+0
+5
+aload 0 
+getfield 3 
+aload 0 
+invokevirtual 7 
+return 
+citac.openreader:pismenko[]
+2
+1
+0
+citac.closereader:cislo
+2
+1
+0
+citac.readline:cislo
+2
+1
+0
+citac.citac
+1
+0
+3
+aload 0 
+invokevirtual 0 
+areturn 0 

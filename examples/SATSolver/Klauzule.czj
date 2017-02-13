@@ -1,0 +1,13 @@
+startuj proved
+
+trida Klauzule {
+    necht cislo[] promenne proved
+    necht cislo pocet proved
+
+    Klauzule(cislo[] promenne) {
+        toto.promenne = promenne proved
+        toto.pocet = Pole.velikost(promenne) proved
+    }
+}
+
+konci proved

@@ -1,0 +1,80 @@
+????
+3
+velikostmaximalni
+bufr
+pocet
+bufr
+perpetummobile
+3
+velikostmaximalni:cislo
+pocet:cislo
+bufr:pismenko[]
+4
+bufr.bufr:cislo
+2
+0
+12
+aload 0 
+iload 1 
+putfield 0 
+aload 0 
+iload 1 
+newarray 
+putfield 1 
+aload 0 
+ipush 0 
+putfield 2 
+aload 0 
+areturn 
+bufr.pridej:pismenko
+2
+0
+13
+aload 0 
+getfield 1 
+aload 0 
+getfield 2 
+iload 1 
+iastore 
+aload 0 
+aload 0 
+getfield 2 
+ipush 1 
+iadd 
+putfield 2 
+return 
+bufr.vyprazdni
+1
+0
+4
+aload 0 
+ipush 0 
+putfield 2 
+return 
+bufr.napismenko
+3
+0
+23
+aload 0 
+getfield 2 
+newarray 
+astore 1 
+ipush 0 
+istore 2 
+iload 2 
+aload 0 
+getfield 2 
+if_icmpge 21 
+aload 1 
+iload 2 
+aload 0 
+getfield 1 
+iload 2 
+iaload 
+iastore 
+iload 2 
+ipush 1 
+iadd 
+istore 2 
+aload 1 
+areturn 

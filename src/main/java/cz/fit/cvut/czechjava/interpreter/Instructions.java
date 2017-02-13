@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter;
 
-import cz.fit.cvut.czechjava.compiler.Instruction;
-import cz.fit.cvut.czechjava.compiler.Method;
+import cz.fit.cvut.czechjava.compiler.model.Instruction;
+import cz.fit.cvut.czechjava.compiler.model.Method;
 
 import java.util.ArrayList;
 import java.util.Iterator;

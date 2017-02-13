@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.Truffle;
-import cz.fit.cvut.czechjava.compiler.Classfile;
+import cz.fit.cvut.czechjava.compiler.model.Classfile;
 import cz.fit.cvut.czechjava.interpreter.CZECHJavaInterpreter;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +29,10 @@ public class Run {
      * Logger
      */
     private static final Logger LOGGER = Logger.getLogger(Run.class.getName());
+    /**
+     * Prazdne pole argumentu
+     */
+    private static final String[] EMPTY_ARGUMENTS = {};
 
     /**
      * Prepare arguments options
@@ -44,8 +48,8 @@ public class Run {
         stackOpt.setOptionalArg(true);
         Option compiledOpt = new Option("c", "compiled", true, "Slozka se zkompilovanymi soubory.");
         compiledOpt.setRequired(true);
-        Option argumentsOpt = new Option("a", "arguments", true, "Argumenty programu.");
-        argumentsOpt.setRequired(true);
+        Option argumentsOpt = new Option("a", "arguments", true, "Argumenty programu. (volitelne)");
+        argumentsOpt.setRequired(false);
 
         Options options = new Options();
         options.addOption(heapSizeOpt);
@@ -53,6 +57,7 @@ public class Run {
         options.addOption(stackOpt);
         options.addOption(compiledOpt);
         options.addOption(argumentsOpt);
+        
         return options;
     }
 
@@ -78,30 +83,36 @@ public class Run {
             if (cmd.hasOption("stack")) {
                 stackSize = Integer.parseInt(cmd.getOptionValue("stack"));
             }
+            if (cmd.hasOption("arguments")) {
+                arguments = cmd.getOptionValues("arguments");
+            } else {
+                arguments = EMPTY_ARGUMENTS;
+            }
             directory = cmd.getOptionValue("compiled");
-            arguments = cmd.getOptionValues("arguments");
+            
         } catch (NumberFormatException | ParseException ex) {
             LOGGER.fatal(ex);
             formatter.printHelp("czechjava", options);
-            System.exit(1);
+            System.exit(0);
         }
 
-        List<cz.fit.cvut.czechjava.compiler.Class> librariesList = loadLibraries();
-        List<cz.fit.cvut.czechjava.compiler.Class> classList = loadClassfiles(directory);
+        List<cz.fit.cvut.czechjava.compiler.model.Class> librariesList = loadLibraries();
+        List<cz.fit.cvut.czechjava.compiler.model.Class> classList = loadClassfiles(directory);
         classList.addAll(librariesList);
 
-        CZECHJavaInterpreter interpreter = new CZECHJavaInterpreter(classList, heapSize, frameCount, stackSize, Arrays.asList(arguments));
+        CZECHJavaInterpreter interpreter = new CZECHJavaInterpreter(classList, heapSize,
+                frameCount, stackSize, Arrays.asList(arguments));
         CallTarget target = Truffle.getRuntime().createCallTarget(interpreter);
         target.call();
     }
 
-    public static List<cz.fit.cvut.czechjava.compiler.Class> loadLibraries() throws IOException {
+    public static List<cz.fit.cvut.czechjava.compiler.model.Class> loadLibraries() throws IOException {
         return loadClassfiles(Globals.COMPILED_LIBRARIES_DIRECTORY);
     }
 
-    public static List<cz.fit.cvut.czechjava.compiler.Class> loadClassfiles(String directoryName) throws IOException {
+    public static List<cz.fit.cvut.czechjava.compiler.model.Class> loadClassfiles(String directoryName) throws IOException {
         File directory = new File(directoryName);
-        List<cz.fit.cvut.czechjava.compiler.Class> classList = new ArrayList<>();
+        List<cz.fit.cvut.czechjava.compiler.model.Class> classList = new ArrayList<>();
 
         if (directory.isDirectory()) {
             File[] dirFiles = directory.listFiles();

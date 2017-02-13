@@ -1,6 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter.memory;
 
-import cz.fit.cvut.czechjava.compiler.Field;
+import cz.fit.cvut.czechjava.compiler.model.Field;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.interpreter.Converter;
 import cz.fit.cvut.czechjava.interpreter.InterpretedClass;

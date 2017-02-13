@@ -1,0 +1,21 @@
+startuj proved
+
+trida Udelatko {
+
+    provadej(pismenko[] vstup) {
+        plati (vstup == nictam){
+            Konzole.vypis("Chybi vstupni soubor") proved
+            vrat proved
+        }
+
+        necht Parser p = vytvor Parser() proved
+        necht CNF cnf = p.parsuj(vytvor HodnePismenek(vstup)) proved
+        Konzole.vypis("Vstup parsovan") proved
+        Konzole.vypis("Zacinam resit") proved
+
+        necht Resic r = vytvor Resic(cnf) proved
+        r.provadej() proved
+    }
+}
+
+konci proved 

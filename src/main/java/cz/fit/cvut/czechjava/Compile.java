@@ -3,8 +3,8 @@ package cz.fit.cvut.czechjava;
 import cz.fit.cvut.czechjava.compiler.CZECHJavaCompiler;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.parser.Node;
-import cz.fit.cvut.czechjava.compiler.Class;
-import cz.fit.cvut.czechjava.compiler.Classfile;
+import cz.fit.cvut.czechjava.compiler.model.Class;
+import cz.fit.cvut.czechjava.compiler.model.Classfile;
 import cz.fit.cvut.czechjava.compiler.exceptions.CompilerException;
 import cz.fit.cvut.czechjava.parser.ASTCompilationUnit;
 import cz.fit.cvut.czechjava.parser.CZECHJavaParser;
@@ -80,7 +80,7 @@ public class Compile {
         } catch (NumberFormatException | org.apache.commons.cli.ParseException ex) {
             LOGGER.fatal(ex);
             formatter.printHelp("czechjavac", options);
-            System.exit(1);
+            System.exit(0);
         }
 
         // Add all libraries for type control (sources)

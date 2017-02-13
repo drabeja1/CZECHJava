@@ -1,0 +1,38 @@
+startuj proved
+
+trida Z {
+    bar(){
+        Konzole.vypis("Z::bar()") proved
+    }
+}
+
+trida A dedic Z {
+    foo(){
+        bar() proved
+        rodic.bar() proved
+    }
+
+    bar(){
+        Konzole.vypis("A::bar()") proved
+    }
+}
+
+trida B dedic A {
+    bar(){
+        Konzole.vypis("B::bar()") proved
+    }
+
+    foo(){
+        rodic.foo() proved
+    }
+}
+
+trida Udelatko {
+    provadej() {
+        necht A a = vytvor A() proved
+        a = vytvor B() proved
+        a.foo() proved
+    }
+}
+
+konci proved 

@@ -10,9 +10,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath cz.fit.cvut.czechjava.Compile -s examples/Prints/ -t compiled/</exec.args>
+                <exec.args>-classpath %classpath cz.fit.cvut.czechjava.Run -h 1024 -f 256 -s 128 -c compiled/ -a resources/sats/01.txt</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>-</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -25,10 +25,10 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath cz.fit.cvut.czechjava.Compile -s examples/Prints/ -t compiled/</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath cz.fit.cvut.czechjava.Run -h 1024 -f 256 -s 128 -c compiled/ -a resources/sats/01.txt</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <exec.workingdir>-</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
         <action>
@@ -41,9 +41,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath cz.fit.cvut.czechjava.Compile -s examples/Prints/ -t compiled/</exec.args>
+                <exec.args>-classpath %classpath cz.fit.cvut.czechjava.Run -h 1024 -f 256 -s 128 -c compiled/ -a resources/sats/01.txt</exec.args>
                 <exec.executable>java</exec.executable>
-                <exec.workingdir>-</exec.workingdir>
+                <exec.workingdir></exec.workingdir>
             </properties>
         </action>
     </actions>

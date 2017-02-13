@@ -173,8 +173,8 @@ TOKEN : /* OPERATORS */
 | < LE: "<=" >
 | < GE: ">=" >
 | < NE: "!=" >
-| < SC_OR: "ci" >
-| < SC_AND: "aj" >
+| < SC_OR: "nebo" >
+| < SC_AND: "taky" >
 | < PLUS: "+" >
 | < MINUS: "-" >
 | < STAR: "*" >

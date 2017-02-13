@@ -6,11 +6,11 @@ import com.oracle.truffle.api.nodes.RootNode;
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.Globals;
-import cz.fit.cvut.czechjava.compiler.Class;
-import cz.fit.cvut.czechjava.compiler.ConstantPool;
-import cz.fit.cvut.czechjava.compiler.Instruction;
-import cz.fit.cvut.czechjava.compiler.InstructionSet;
-import cz.fit.cvut.czechjava.compiler.Method;
+import cz.fit.cvut.czechjava.compiler.model.Class;
+import cz.fit.cvut.czechjava.compiler.model.ConstantPool;
+import cz.fit.cvut.czechjava.compiler.model.Instruction;
+import cz.fit.cvut.czechjava.compiler.model.InstructionSet;
+import cz.fit.cvut.czechjava.compiler.model.Method;
 import cz.fit.cvut.czechjava.type.Type;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl.GenerationCollector;
@@ -23,7 +23,6 @@ import cz.fit.cvut.czechjava.type.Types;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -258,8 +257,7 @@ public class CZECHJavaInterpreter extends RootNode {
     public void executeStringInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflow {
         int constPosition = instruction.getOperand(0);
         String constant = constantPool.getConstant(constPosition);
-
-        //Create array of chars and push it on stack
+        // Create array of chars and push it on stack
         Array charArray = Converter.charArrayToArray(constant.toCharArray());
         StackValue reference = heap.alloc(charArray);
 
@@ -276,6 +274,7 @@ public class CZECHJavaInterpreter extends RootNode {
             stack.currentFrame().push(reference);
 
         } catch (LookupException e) {
+            LOGGER.fatal(e);
             throw new InterpreterException("Trying to instantiate non-existent class '" + className + "'");
         }
     }

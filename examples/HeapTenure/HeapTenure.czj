@@ -1,0 +1,54 @@
+startuj proved
+
+/**
+ * Implementace Heap
+ * Pro tento priklad nastav HEAP_SIZE = 100 (10 eden, 90 tenure)
+*/
+trida Udelatko {
+
+     provadej() {
+        necht TestClass a proved
+        necht TestClass temp proved
+
+        necht cislo i proved
+        necht cislo j = 0 proved
+
+        // Vytvori 10 setu
+        opakuj (j < 10) {
+            i = 0 proved
+            a = nictam proved
+
+            //Vytvor 89 objektu ktere zaplni tenure
+            // 1 objekt je reference na main tridu
+            opakuj (i < 89){
+                temp = a proved
+                a = vytvor TestClass() proved
+                a.prev = temp proved
+
+                i = i + 1 proved
+            }
+
+            a.print(1) proved
+
+
+            j = j + 1 proved
+        }
+
+        dechrobok proved
+    }
+}
+
+trida TestClass {
+    necht TestClass prev proved
+
+    print(cislo i) {
+        plati (toto.prev != nictam) {
+            Konzole.vypis(i) proved
+            toto.prev.print(i+1) proved
+        } jinak {
+            Konzole.vypis(i) proved
+        }
+    }
+}
+
+konci proved

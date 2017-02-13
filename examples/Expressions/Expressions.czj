@@ -1,0 +1,29 @@
+startuj proved
+
+trida Udelatko {
+
+    provadej() {
+
+        necht cislo i = 1 proved
+        necht cislo j = 1 proved
+        necht jeto b proved
+
+        b = (i == 1 taky (i == 4 nebo 1 < 5) ) proved
+        Konzole.vypis(b) proved
+
+        plati (i == 1 taky (j == 1 nebo (1 == 1) ) ) {
+            i = i + 1 * 4 / 10 % 4 - 5 proved
+        } neboi (i == 2) {
+            i = i + j proved
+        } jinak {
+            plati (i == j) {
+                i = j + 2 proved
+            }
+        }
+
+        Konzole.vypis(i) proved
+    }
+
+}
+
+konci proved

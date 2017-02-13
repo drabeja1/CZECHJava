@@ -1,6 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter.natives;
 
-import cz.fit.cvut.czechjava.compiler.Method;
+import cz.fit.cvut.czechjava.compiler.model.Method;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
 import cz.fit.cvut.czechjava.interpreter.natives.array.CharArraySize;
@@ -15,7 +15,7 @@ import cz.fit.cvut.czechjava.interpreter.natives.math.LogInt;
 import cz.fit.cvut.czechjava.interpreter.natives.math.PowInt;
 import cz.fit.cvut.czechjava.type.Type;
 import cz.fit.cvut.czechjava.type.Types;
-import cz.fit.cvut.czechjava.compiler.Class;
+import cz.fit.cvut.czechjava.compiler.model.Class;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;

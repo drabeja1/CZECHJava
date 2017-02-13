@@ -1,5 +1,13 @@
 package cz.fit.cvut.czechjava.compiler;
 
+import cz.fit.cvut.czechjava.compiler.model.ConstantPool;
+import cz.fit.cvut.czechjava.compiler.model.Field;
+import cz.fit.cvut.czechjava.compiler.model.InstructionSet;
+import cz.fit.cvut.czechjava.compiler.model.Instruction;
+import cz.fit.cvut.czechjava.compiler.model.CompilerTypes;
+import cz.fit.cvut.czechjava.compiler.model.Class;
+import cz.fit.cvut.czechjava.compiler.model.Variable;
+import cz.fit.cvut.czechjava.compiler.model.Method;
 import cz.fit.cvut.czechjava.compiler.exceptions.CompilerException;
 import cz.fit.cvut.czechjava.compiler.exceptions.TypeException;
 import cz.fit.cvut.czechjava.Globals;

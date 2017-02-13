@@ -1,5 +1,7 @@
 package cz.fit.cvut.czechjava.compiler;
 
+import cz.fit.cvut.czechjava.compiler.model.ByteCode;
+import cz.fit.cvut.czechjava.compiler.model.Variable;
 import cz.fit.cvut.czechjava.type.Type;
 
 import java.util.*;

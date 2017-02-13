@@ -1,0 +1,46 @@
+startuj proved
+
+/**
+ * Implementace Heap
+ * Pro spravnou funkcnost nastavte TestClass = 100 v czechjava 
+ */
+trida Udelatko {
+
+     provadej() {
+            necht TestClass old = vytvor TestClass() proved
+            necht TestClass a = old proved
+            necht TestClass temp proved
+            necht cislo i = 0 proved
+
+            opakuj(i < 99) {
+                temp = a proved
+                a = vytvor TestClass() proved
+                a.poradi = i+1 proved
+
+                //Dirty link
+                temp.next = a proved
+                i = i + 1 proved
+            }
+
+            old.print() proved
+            dechrobok proved
+    }
+
+}
+
+trida TestClass {
+    necht TestClass next proved
+    necht cislo poradi proved
+
+    print() {
+        Konzole.vypis(toto.poradi) proved
+
+        plati (toto.next != nictam) {
+            toto.next.print() proved
+        } jinak {
+            dechrobok proved
+        }
+    }
+}
+
+konci proved

@@ -63,7 +63,7 @@ TOKEN : /* RESERVED WORDS AND LITERALS */
 | < NEW: "vytvor" >
 | < IF: "plati" >
 | < ELSEIF: "neboi" >
-| < ELSE: "nebo" >
+| < ELSE: "jinak" >
 | < WHILE: "opakuj" >
 | < BREAK: "stuj" >
 | < CONTINUE: "jdidal" >
@@ -71,7 +71,7 @@ TOKEN : /* RESERVED WORDS AND LITERALS */
 | < TRY: "kontroluj" >
 | < CATCH: "chytni" >
 | < FINALLY: "dodelej" >
-//| < PRINT: "pravit" >
+//| < PRINT: "tiskni" >
 | < RETURN: "vrat" >
 | < STATIC: "nemenny" >
 | < NATIVE: "natyv" >
@@ -177,8 +177,8 @@ TOKEN : /* OPERATORS */
 | < LE: "<=" >
 | < GE: ">=" >
 | < NE: "!=" >
-| < SC_OR: "ci" >
-| < SC_AND: "aj" >
+| < SC_OR: "nebo" >
+| < SC_AND: "taky" >
 | < PLUS: "+" >
 | < MINUS: "-" >
 | < STAR: "*" >
@@ -1212,7 +1212,7 @@ void ConditionalOrExpression() :
                                  jjtn001.jjtSetFirstToken(getToken(1));
                                }
                                try {
-/*@egen*/ "ci"/*@bgen(jjtree)*/
+/*@egen*/ "nebo"/*@bgen(jjtree)*/
                                } finally {
                                  if (jjtc001) {
                                    jjtree.closeNodeScope(jjtn001, true);
@@ -1261,7 +1261,7 @@ void ConditionalAndExpression() :
                            jjtn001.jjtSetFirstToken(getToken(1));
                          }
                          try {
-/*@egen*/ "aj"/*@bgen(jjtree)*/
+/*@egen*/ "taky"/*@bgen(jjtree)*/
                          } finally {
                            if (jjtc001) {
                              jjtree.closeNodeScope(jjtn001, true);
@@ -2441,7 +2441,7 @@ void IfStatement() :
 {/*@bgen(jjtree) IfStatement */
   try {
 /*@egen*/
-  "plati" "(" Expression() ")" Block() ( LOOKAHEAD(3) "neboi" "(" Expression() ")" Block() )* [ LOOKAHEAD(1) "nebo" Block() ]/*@bgen(jjtree)*/
+  "plati" "(" Expression() ")" Block() ( LOOKAHEAD(3) "neboi" "(" Expression() ")" Block() )* [ LOOKAHEAD(1) "jinak" Block() ]/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);

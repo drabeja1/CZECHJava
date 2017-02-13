@@ -1,0 +1,77 @@
+startuj proved
+
+trida Parser {
+
+    CNF parsuj(HodnePismenek soubor){
+
+        necht Citac c = vytvor Citac() proved
+        c.otevri(soubor) proved
+
+        necht HodnePismenek radka proved
+        necht HodnePismenek[] casti proved
+        radka = c.ctiRadek() proved
+
+        necht Klauzule[] klauzule proved
+
+        necht HodnePismenek nula = "0" proved
+        necht HodnePismenek komentar = "c" proved
+        necht HodnePismenek meta = "p" proved
+
+        necht cislo promennych = 0 proved
+
+        necht cislo klauzuleIndex = 0 proved
+
+        opakuj (radka != nictam){
+            casti = radka.rozdel(' ') proved
+
+            necht cislo j = 0 proved
+            necht cislo pocet = Pole.velikost(casti) proved
+
+            necht HodnePismenek prvni = casti[0] proved
+
+            plati (pocet != 0 taky prvni.jsouStejne(komentar) == nenitotak) {
+
+                plati (prvni.jsouStejne(meta) == jetotak ){
+                    necht cislo klauzuli = cisloCele.preved(casti[3]) proved
+                    promennych = cisloCele.preved(casti[2]) proved
+
+                    klauzule = vytvor Klauzule[klauzuli] proved
+
+                } jinak {
+                    necht cislo[] promenne = vytvor cislo[promennych] proved
+
+                    opakuj (j < pocet){
+                        necht HodnePismenek cast = casti[j] proved
+
+                        plati (cast.jsouStejne(nula) == jetotak){
+                            stuj proved
+                        }
+
+                        necht cislo p = cisloCele.preved(casti[j]) proved
+                        necht cislo hodnota proved
+                        plati (p < 0){
+                            p = p * (0-1) proved
+                            hodnota = -1 proved
+                        } jinak {
+                            hodnota = 1 proved
+                        }
+
+                        promenne[p-1] = hodnota proved
+
+                        j = j + 1 proved
+                    }
+
+                    klauzule[klauzuleIndex] = vytvor Klauzule(promenne) proved
+                    klauzuleIndex = klauzuleIndex + 1 proved
+
+                }
+            }
+            radka = c.ctiRadek() proved
+        }
+
+        c.zavri() proved
+        vrat vytvor CNF(klauzule, promennych, klauzuli) proved
+    }
+}
+
+konci proved 
