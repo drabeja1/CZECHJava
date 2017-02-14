@@ -36,7 +36,7 @@ Hodnoty:
 
 Základní knihovna také obsahuje třídy:
 *	**HodnePismenek** – ekvivalent String,
-*	**Perpetummobile** – všechny třídy dědí implicitně od této (náhrada Object). Obsahuje metody naHodnePismenek() a jsouStejny(Perpetummobile p), ekvivalenty pro toString() a equals(Object o)
+*	**Perpetummobile** – všechny třídy dědí implicitně od této (náhrada Object). Obsahuje metody **naHodnePismenek()** a **jsouStejny(Perpetummobile p)**, ekvivalenty pro toString() a equals(Object o)
 *	**CistSoubor** – čtení ze souboru
 *	**Konzole** – výpis do konzole
 *	**Bufr** – jednoduchý buffer na čtení písmenek
@@ -203,3 +203,8 @@ Pro spoštění zkompilovaných souborů slouží interptreter **czechjava**. Te
 * -s - velikost stacku ve framu (volitelně),
 * -c - složka s kompilovanými soubory,
 * -a - výčet argumentů programu (volitelně).
+
+Příklad:
+```
+./czechjava -h 1024 -f 256 -s 128 -c compiled/ -a test
+```
