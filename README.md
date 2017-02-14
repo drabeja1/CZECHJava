@@ -11,7 +11,7 @@ startuj proved
 
 trida Udelatko {
   provadej() {
-		Konzole.pis(“Hello world!”) proved
+		Konzole.vypis(“Hello world!”) proved
   }
 }
 ```
