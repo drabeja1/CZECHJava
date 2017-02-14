@@ -1,0 +1,64 @@
+startuj proved
+
+trida Udelatko {
+
+    provadej(pismenko[] vstup) {
+        necht cislo[] input = vytvor cislo[5] proved
+        necht cislo v = Pole.velikost(input) proved
+        necht cislo i = 0 proved
+        
+        input[0] = 5 proved
+        input[1] = 4 proved
+        input[2] = 3 proved
+        input[3] = 2 proved
+        input[4] = 1 proved
+
+        opakuj (i < v) {
+            Konzole.vypis(input[i]) proved
+            i = i + 1 proved
+        }
+        
+        Konzole.vypis("Serazeno: ") proved
+        BubbleSort.sort(input) proved
+
+        i = 0 proved
+        opakuj (i < v) {
+            Konzole.vypis(input[i]) proved
+            i = i + 1 proved
+        }
+    }
+}
+
+/**
+ * Implementace BubbleSortu
+ */
+trida BubbleSort {
+    
+    nemenny sort(cislo[] input) {
+        necht cislo v = Pole.velikost(input) - 1 proved
+        necht cislo i = 0 proved
+        necht cislo j = 0 proved
+        
+        necht jeto swap = nenitotak proved
+        opakuj (i < v) {
+            swap = nenitotak proved
+            opakuj (j < v - i) {
+                plati (input[j] > input[j+1])  {
+                    necht cislo tmp = input[j] proved
+                    input[j] = input[j+1] proved
+                    input[j+1] = tmp proved
+                    swap = jetotak proved
+                }
+                j = j + 1 proved
+            }
+            plati (swap == nenitotak) {
+                stuj proved
+            }
+            j = 0 proved
+            i = i + 1 proved
+        }
+    }
+    
+}
+
+konci proved
