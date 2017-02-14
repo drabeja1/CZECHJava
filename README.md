@@ -92,7 +92,7 @@ trida Priklad2 {
 konci proved
 ```
 
-### Děičnost ###
+### Dědičnost ###
 CZECHJava je jazyk objektový, pokud chceme uvést třídu, ze které chceme dědi, použijeme konstrukt **dedic**. 
 Jako reference na vlastní instanci slouží konstrukt **toto** (ekvivalent this). Reference na rodiče je zde jednoduše **rodic** (ekvivalent super)
 Nový objekt vytvoříme pomocí **vytvor** (ekvivalent new).
@@ -191,7 +191,7 @@ Pro kompilaci programů je určen compiler **czechjavac**, který má dva argume
 
 Výchozím typem CZECHJava souborů je typ **.czj**
 
-Příklad:
+#### Příklad: ####
 ```
 ./czechjavac -s examples/Prints/ -t compiled/
 ```
@@ -204,7 +204,7 @@ Pro spoštění zkompilovaných souborů slouží interptreter **czechjava**. Te
 * -c - složka s kompilovanými soubory,
 * -a - výčet argumentů programu (volitelně).
 
-Příklad:
+#### Příklad: ####
 ```
 ./czechjava -h 1024 -f 256 -s 128 -c compiled/ -a test
 ```
