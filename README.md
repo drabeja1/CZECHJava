@@ -161,7 +161,7 @@ Realizace interpreteru:
 * Nativní a statické volání
 * Primitiva (integer a float) na stacku a pointer s 1 na posledním bitu
 * Aritmetické operace pro int a float
-* Pole - priitivní i referencí
+* Pole - primitivní i referencí
 * Dynamický lookup metod
 * Overload metod
 
