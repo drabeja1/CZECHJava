@@ -24,20 +24,16 @@ public final class Frame extends ByteArrayWrapper {
         maxSize = size;
         count = 0;
 
-        //Save return address
-        setBytes(0, Converter.intToByteArray(returnAddress));
-
-        //Push this as a first variable
+        // Save return address
+        setBytes(0, TypeConverter.intToByteArray(returnAddress));
+        // Push this as a first variable
         set(RETURN_ADDRESS_SIZE, thisReference);
-
-        //Arguments and this ref counted in locals
+        // Arguments and this ref counted in locals
         localVariablesCount = method.getLocalVariablesCount();
-
-        //For stack trace
+        // For stack trace
         methodName = method.getName();
 
         count = getStackOffset();
-
     }
 
     public void push(StackValue i) {
@@ -53,27 +49,13 @@ public final class Frame extends ByteArrayWrapper {
         return value;
     }
 
-    public void pushBytes(StackValue i) {
-        overflowCheck(StackValue.SIZE);
-        set(count, i);
-        count += StackValue.SIZE;
-    }
-
-    public StackValue popBytes() {
-        underflowCheck(StackValue.SIZE);
-        count -= StackValue.SIZE;
-        return get(count);
-    }
-
     public void set(int from, StackValue value) {
         byte[] bytes = value.getBytes();
         setBytes(from, bytes);
-
     }
 
     public StackValue get(int from) {
-        byte[] bytes = getBytes(from);
-        return new StackValue(bytes);
+        return new StackValue(getBytes(from));
     }
 
     public void storeVariable(int index, StackValue value) {
@@ -87,7 +69,6 @@ public final class Frame extends ByteArrayWrapper {
         if (index > localVariablesCount - 1) {
             throw new IndexOutOfBoundsException("Trying to load non-existent variable");
         }
-
         return get(getVariablePosition(index));
     }
 
@@ -96,7 +77,7 @@ public final class Frame extends ByteArrayWrapper {
     }
 
     protected int getReturnAddress() {
-        return Converter.byteArrayToInt(getBytes(0));
+        return TypeConverter.byteArrayToInt(getBytes(0));
     }
 
     public int getStackOffset() {
@@ -127,23 +108,23 @@ public final class Frame extends ByteArrayWrapper {
         }
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(getReturnAddress()).append("\n").append("-----------\n");
 
-        //Show local variables
+        // Show local variables
         for (int i = 0; i < localVariablesCount; i++) {
             int start = getVariablePosition(i);
-
             StackValue var = get(start);
             sb.append("Var ").append(i).append(": ").append(var).append("\n");
         }
-
         sb.append("-----------\n");
-
-        //Show values on stack
+        // Show values on stack
         for (int j = getStackOffset(); j < count; j++) {
             sb.append(byteArray[j]).append(" ");
         }

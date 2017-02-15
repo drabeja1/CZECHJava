@@ -20,14 +20,13 @@ public class Instructions {
         this.instructionList = new ArrayList<>();
         this.iterator = new InstructionIterator();
 
-        //Go through all classes and methods and save all bytecode to the list
+        // Go through all classes and methods and save all bytecode to the list
         for (InterpretedClass c : classPool.getClasses()) {
             for (Method method : c.getMethods()) {
                 int position = instructionList.size();
-
                 List<Instruction> instructions = method.getByteCode().getInstructions();
 
-                //We have to change instructions positions relatively to the method
+                // We have to change instructions positions relatively to the method
                 for (Instruction inst : instructions) {
                     switch (inst.getInstruction()) {
                         case GoTo:
@@ -50,10 +49,8 @@ public class Instructions {
                 }
 
                 instructionList.addAll(instructions);
-
-                //Keep reference to method start position
+                // Keep reference to method start position
                 ((InterpretedMethod) method).setInstructionPosition(position);
-
             }
         }
     }
@@ -68,6 +65,32 @@ public class Instructions {
 
     public int getCurrentPosition() {
         return iterator.getPosition() - 1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        int numberToShow = 20;
+        int start = getCurrentPosition() - numberToShow / 2;
+
+        if (start < 0) {
+            start = 0;
+        }
+
+        for (int i = start; i < start + numberToShow; i++) {
+            sb.append(instructionList.get(i));
+
+            if (i == getCurrentPosition()) {
+                sb.append("<--");
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     private class InstructionIterator implements Iterator<Instruction> {
@@ -95,7 +118,6 @@ public class Instructions {
         public Instruction next() {
             Instruction inst = instructionList.get(position);
             position++;
-
             return inst;
         }
 
@@ -103,30 +125,5 @@ public class Instructions {
         public void remove() {
             throw new UnsupportedOperationException("Remove is not supported");
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        int numberToShow = 20;
-
-        int start = getCurrentPosition() - numberToShow / 2;
-
-        if (start < 0) {
-            start = 0;
-        }
-
-        for (int i = start; i < start + numberToShow; i++) {
-            sb.append(instructionList.get(i));
-
-            if (i == getCurrentPosition()) {
-                sb.append("<--");
-            }
-
-            sb.append("\n");
-        }
-
-        return sb.toString();
     }
 }

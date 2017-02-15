@@ -147,7 +147,7 @@ public class Method {
         return byteCode;
     }
 
-    public void setByteCode(ByteCode byteCode) {
+    public final void setByteCode(ByteCode byteCode) {
         this.byteCode = byteCode;
     }
 
@@ -155,7 +155,7 @@ public class Method {
         return localVariablesCount;
     }
 
-    public void setLocalVariablesCount(int localVariablesCount) {
+    public final void setLocalVariablesCount(int localVariablesCount) {
         this.localVariablesCount = localVariablesCount;
     }
 
@@ -171,7 +171,7 @@ public class Method {
         this.flags.add(flag);
     }
 
-    public void addFlags(Set<MethodFlag> flags) {
+    public final void addFlags(Set<MethodFlag> flags) {
         this.flags.addAll(flags);
     }
 

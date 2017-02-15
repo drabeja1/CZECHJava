@@ -16,11 +16,12 @@ public class PrintFloat extends Native {
 
     /**
      * {@inheritDoc}
+     * 
+     * @return {@code null}
      */
     @Override
     public StackValue invoke(StackValue args[]) {
-        StackValue arg = args[0];
-        float value = arg.floatValue();
+        float value = args[0].floatValue();
         System.out.println(value);
         return null;
     }

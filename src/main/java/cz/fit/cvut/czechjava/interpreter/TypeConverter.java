@@ -7,10 +7,11 @@ import cz.fit.cvut.czechjava.type.NumberType;
 import java.nio.ByteBuffer;
 
 /**
- *
+ * Converter between data types
+ * 
  * @author Jakub
  */
-public class Converter {
+public class TypeConverter {
 
     public static float byteArrayToFloat(byte[] bytes, int from) {
         return ByteBuffer.wrap(bytes, from, NumberType.SIZE).getFloat();
@@ -50,11 +51,9 @@ public class Converter {
 
     public static char[] arrayToCharArray(Array array) {
         char[] chars = new char[array.getSize()];
-
         for (int i = 0; i < array.getSize(); i++) {
             chars[i] = array.get(i).charValue();
         }
-
         return chars;
     }
 
@@ -73,29 +72,24 @@ public class Converter {
         for (int i = 0; i < intArray.length; i++) {
             res[i] = (intArray[i] != 0);
         }
-
         return res;
     }
 
     public static int[] byteArrayToIntArray(byte[] bytes) {
-
         int intArrayLength = bytes.length / NumberType.SIZE;
         int[] res = new int[intArrayLength];
         for (int i = 0; i < intArrayLength; i++) {
             res[i] = byteArrayToInt(bytes, i * NumberType.SIZE);
         }
-
         return res;
     }
 
     public static float[] byteArrayToFloatArray(byte[] bytes) {
-
         int floatArrayLength = bytes.length / FloatType.SIZE;
         float[] res = new float[floatArrayLength];
         for (int i = 0; i < floatArrayLength; i++) {
             res[i] = byteArrayToFloat(bytes, i * FloatType.SIZE);
         }
-
         return res;
     }
 

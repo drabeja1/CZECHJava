@@ -9,7 +9,10 @@ import cz.fit.cvut.czechjava.compiler.model.Class;
  */
 public class InterpretedClass extends Class {
 
-    int classPoolAddress;
+    /**
+     * Adress in class pool
+     */
+    private int classPoolAddress;
 
     public InterpretedClass(Class c) {
         super(c.getClassName(), c.getSuperName());
@@ -17,7 +20,6 @@ public class InterpretedClass extends Class {
         c.getFields().forEach(field -> this.addField(field));
         c.getMethods().forEach(method -> this.addMethod(new InterpretedMethod(method)));
         setConstantPool(c.getConstantPool());
-
     }
 
     public int getClassPoolAddress() {

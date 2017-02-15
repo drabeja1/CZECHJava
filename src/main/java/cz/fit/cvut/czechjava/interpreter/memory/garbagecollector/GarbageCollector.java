@@ -1,7 +1,7 @@
 package cz.fit.cvut.czechjava.interpreter.memory.garbagecollector;
 
 import cz.fit.cvut.czechjava.interpreter.Frame;
-import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.Stack;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
 
@@ -16,7 +16,7 @@ public abstract class GarbageCollector {
 
     /**
      * Return roots from stack
-     * 
+     *
      * @param stack stack
      * @return roots
      */
@@ -52,8 +52,7 @@ public abstract class GarbageCollector {
      *
      * @param roots
      * @return
-     * @throws HeapOverflow dirty links
+     * @throws HeapOverflowException dirty links
      */
-    public abstract Set<StackValue> run(Set<StackValue> roots) throws HeapOverflow;
-    
+    public abstract Set<StackValue> run(Set<StackValue> roots) throws HeapOverflowException;
 }

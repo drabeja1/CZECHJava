@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.interpreter.natives;
 
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
-import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
 
 /**
@@ -17,5 +17,5 @@ public abstract class Native {
         this.heap = heap;
     }
 
-    public abstract StackValue invoke(StackValue args[]) throws HeapOverflow, InterpreterException;
+    public abstract StackValue invoke(StackValue args[]) throws HeapOverflowException, InterpreterException;
 }

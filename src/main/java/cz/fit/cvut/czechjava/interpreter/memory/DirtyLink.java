@@ -8,8 +8,8 @@ import cz.fit.cvut.czechjava.interpreter.StackValue;
  */
 public class DirtyLink {
 
-    StackValue from;
-    StackValue reference;
+    private final StackValue from;
+    private final StackValue reference;
 
     public DirtyLink(StackValue from, StackValue reference) {
         this.from = from;

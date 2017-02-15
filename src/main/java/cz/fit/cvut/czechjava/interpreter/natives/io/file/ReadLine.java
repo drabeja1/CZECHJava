@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.interpreter.natives.io.file;
 
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
-import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.natives.Native;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
@@ -24,18 +24,16 @@ public class ReadLine extends Native {
      * {@inheritDoc}
      */
     @Override
-    public StackValue invoke(StackValue[] args) throws HeapOverflow, InterpreterException {
+    public StackValue invoke(StackValue[] args) throws HeapOverflowException, InterpreterException {
         int handle = args[0].intValue();
 
         BufferedReader br = Readers.getInstance().get(handle);
-
         try {
             StackValue reference;
             String line = br.readLine();
 
             if (line != null) {
-
-                //Create array of chars
+                // Create array of chars
                 reference = heap.allocArray(line.length());
                 Array charArray = heap.loadArray(reference);
 
@@ -43,9 +41,8 @@ public class ReadLine extends Native {
                     StackValue charValue = new StackValue(line.charAt(i), StackValue.Type.Primitive);
                     charArray.set(i, charValue);
                 }
-
             } else {
-                //Null reference
+                // Null reference
                 reference = new StackValue(0, StackValue.Type.Pointer);
             }
 

@@ -32,7 +32,6 @@ public class MethodCompilation {
         }
 
         Variable var = new Variable(name, type);
-
         int pos = localVars.size();
         localVars.put(name, var);
         return pos;

@@ -1,6 +1,5 @@
 package cz.fit.cvut.czechjava.compiler.model;
 
-import cz.fit.cvut.czechjava.compiler.model.Method;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
 import cz.fit.cvut.czechjava.type.Type;
@@ -23,16 +22,15 @@ public class Class {
      */
     private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
+    private Class superClass;
+    private Set<Field> allFields;
+
     protected List<String> flags;
     protected String className;
     protected String superName;
     protected List<Field> fields;
     protected List<Method> methods;
     protected ConstantPool constantPool;
-
-    Class superClass;
-    //Including super fields
-    Set<Field> allFields;
 
     public Class() {
         flags = new ArrayList<>();
@@ -175,14 +173,12 @@ public class Class {
 
     public Field getField(int position) {
         int i = 0;
-
         for (Field field : getAllFields()) {
             if (position == i) {
                 return field;
             }
             i++;
         }
-
         return null;
     }
 

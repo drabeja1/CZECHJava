@@ -16,14 +16,13 @@ public class PrintBool extends Native {
 
     /**
      * {@inheritDoc}
+     * 
+     * @return {@code null}
      */
     @Override
     public StackValue invoke(StackValue args[]) {
-        StackValue arg = args[0];
-        boolean value = arg.boolValue();
-
+        boolean value = args[0].boolValue();
         System.out.println(value == false ? "false" : "true");
-
         return null;
     }
 }

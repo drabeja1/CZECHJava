@@ -132,9 +132,7 @@ public class CZECHJavaCompiler {
             Node child = node.jjtGetChild(i);
 
             if (child instanceof ASTFieldDeclaration) {
-
                 fields.addAll(fieldDeclaration((ASTFieldDeclaration) child));
-
             } else if (child instanceof ASTMethodDeclaration) {
                 methodDeclaration((ASTMethodDeclaration) child, aClass);
             }
@@ -216,7 +214,6 @@ public class CZECHJavaCompiler {
 
     protected Type type(ASTType node) throws CompilerException {
         Type type;
-
         Node typeNode = node.jjtGetChild(0);
 
         if (typeNode instanceof ASTBool) {
@@ -254,7 +251,6 @@ public class CZECHJavaCompiler {
         boolean isConstructor = false;
 
         Method method = null;
-
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             Node child = node.jjtGetChild(i);
 

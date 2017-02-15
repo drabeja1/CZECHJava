@@ -23,12 +23,12 @@ import org.apache.log4j.Logger;
  *
  * @author Jakub
  */
-public class Run {
+public class Interpreter {
 
     /**
      * Logger
      */
-    private static final Logger LOGGER = Logger.getLogger(Run.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Interpreter.class.getName());
     /**
      * Prazdne pole argumentu
      */
@@ -119,11 +119,10 @@ public class Run {
             for (File dirFile : dirFiles) {
                 String extension = "";
                 int i = dirFile.getName().lastIndexOf('.');
-
+                
                 if (i > 0) {
                     extension = dirFile.getName().substring(i + 1);
                 }
-
                 if (extension.equals(Globals.CLASS_TYPE_EXTENSION)) {
                     classList.add(Classfile.fromFile(dirFile));
                 }

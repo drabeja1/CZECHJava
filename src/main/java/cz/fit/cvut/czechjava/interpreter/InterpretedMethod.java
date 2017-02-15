@@ -8,14 +8,12 @@ import cz.fit.cvut.czechjava.compiler.model.Method;
  */
 public class InterpretedMethod extends Method {
 
-    int instructionPosition;
+    private int instructionPosition;
 
     public InterpretedMethod(Method method) {
         super(method.getName(), method.getArgs(), method.getClassName(), method.getReturnType());
 
         this.addFlags(method.getFlags());
-
-        //Copy
         this.setByteCode(method.getByteCode());
         this.setLocalVariablesCount(method.getLocalVariablesCount());
     }

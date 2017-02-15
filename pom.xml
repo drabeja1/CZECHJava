@@ -84,7 +84,7 @@
                     <execution>
                         <id>czechjavac</id>
                         <configuration>
-                            <mainClass>cz.fit.cvut.czechjava.Compile</mainClass>
+                            <mainClass>cz.fit.cvut.czechjava.Compiler</mainClass>
                             <attachToBuild>true</attachToBuild>
                             <classifier>onejar</classifier>
                             <filename>czechjavac.jar</filename>
@@ -97,7 +97,7 @@
                     <execution>
                         <id>czechjava</id>
                         <configuration>
-                            <mainClass>cz.fit.cvut.czechjava.Run</mainClass>
+                            <mainClass>cz.fit.cvut.czechjava.Interpreter</mainClass>
                             <attachToBuild>true</attachToBuild>
                             <classifier>onejar</classifier>
                             <filename>czechjava.jar</filename>

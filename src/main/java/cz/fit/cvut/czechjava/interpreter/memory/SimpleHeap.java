@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter.memory;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.InterpretedClass;
 import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.GarbageCollector;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
@@ -14,16 +15,15 @@ public class SimpleHeap implements Heap {
 
     protected HeapItem[] objectArray;
     protected LinkedList<Integer> emptyList;
-
     protected GarbageCollector garbageCollector;
-    int size;
-    int addressStart;
+    
+    private int size;
+    private int addressStart;
 
     public SimpleHeap(int size, int addressStart) {
         objectArray = new HeapItem[size];
         emptyList = new LinkedList<>();
         this.addressStart = addressStart;
-
         this.size = size;
 
         for (int i = size - 1; i >= 0; i--) {
@@ -32,7 +32,7 @@ public class SimpleHeap implements Heap {
     }
 
     public SimpleHeap(int size) {
-        //We start address at, 0 is reserved for null
+        // We start address at, 0 is reserved for null
         this(size, 1);
     }
 
@@ -52,7 +52,7 @@ public class SimpleHeap implements Heap {
      * {@inheritDoc}
      */
     @Override
-    public StackValue allocObject(InterpretedClass objectClass) throws HeapOverflow {
+    public StackValue allocObject(InterpretedClass objectClass) throws HeapOverflowException {
         cz.fit.cvut.czechjava.interpreter.memory.Object object = new Object(objectClass);
         return alloc(object);
     }
@@ -61,19 +61,18 @@ public class SimpleHeap implements Heap {
      * {@inheritDoc}
      */
     @Override
-    public StackValue allocArray(int size) throws HeapOverflow {
+    public StackValue allocArray(int size) throws HeapOverflowException {
         Array array = new Array(size);
         return alloc(array);
     }
 
-    public StackValue alloc(HeapItem object) throws HeapOverflow {
+    public StackValue alloc(HeapItem object) throws HeapOverflowException {
         if (isOutOfSpace()) {
-            throw new HeapOverflow();
+            throw new HeapOverflowException();
         }
 
         int index = emptyList.getLast();
         emptyList.removeLast();
-
         objectArray[index] = object;
 
         return indexToReference(index);
@@ -95,8 +94,8 @@ public class SimpleHeap implements Heap {
         return reference.intValue() - addressStart;
     }
 
-    //0 reference is null
-    //Returns pointer
+    // 0 reference is null
+    // sReturns pointer
     public StackValue indexToReference(int index) {
         return new StackValue(index + addressStart, StackValue.Type.Pointer);
     }
@@ -130,7 +129,6 @@ public class SimpleHeap implements Heap {
     @Override
     public Object loadObject(StackValue reference) {
         HeapItem obj = load(reference);
-
         if (obj == null) {
             throw new NullPointerException();
         }
@@ -152,7 +150,6 @@ public class SimpleHeap implements Heap {
         }
 
         int index = referenceToIndex(reference);
-
         if (index > size - 1 || index < 0) {
             throw new IndexOutOfBoundsException("Can't load object on address: " + reference);
         }
@@ -186,7 +183,6 @@ public class SimpleHeap implements Heap {
         StackValue[] allocated = new StackValue[spaceUsed()];
 
         int pos = 0;
-
         for (int i = 0; i < getSize(); i++) {
             StackValue ref = indexToReference(i);
             HeapItem item = load(ref);

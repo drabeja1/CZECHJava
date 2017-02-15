@@ -1,6 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter.natives.io.file;
 
-import cz.fit.cvut.czechjava.interpreter.Converter;
+import cz.fit.cvut.czechjava.interpreter.TypeConverter;
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
@@ -29,7 +29,7 @@ public class OpenReader extends Native {
         StackValue charRef = args[0];
 
         Array array = heap.loadArray(charRef);
-        char[] chars = Converter.arrayToCharArray(array);
+        char[] chars = TypeConverter.arrayToCharArray(array);
 
         String fileName = new String(chars);
         try {

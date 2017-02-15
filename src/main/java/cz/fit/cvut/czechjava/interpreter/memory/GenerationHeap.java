@@ -1,5 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter.memory;
 
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.InterpretedClass;
 import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl.GenerationCollector;
 import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl.MarkAndSweepCollector;
@@ -17,16 +18,13 @@ public class GenerationHeap implements Heap {
     protected GenerationCollector garbageCollector;
 
     public GenerationHeap(int edenSize, int tenureSize, Stack stack) {
-
         this.edenSize = edenSize;
         this.tenureSize = tenureSize;
-
-        eden = new SimpleHeap(edenSize);
-        eden.setGarbageCollector(new MarkAndSweepCollector(eden));
-
-        //Address start at end of eden
-        tenure = new SimpleHeap(tenureSize, edenSize + 1);
-        tenure.setGarbageCollector(new MarkAndSweepCollector(tenure));
+        this.eden = new SimpleHeap(edenSize);
+        this.eden.setGarbageCollector(new MarkAndSweepCollector(eden));
+        // Address start at end of eden
+        this.tenure = new SimpleHeap(tenureSize, edenSize + 1);
+        this.tenure.setGarbageCollector(new MarkAndSweepCollector(tenure));
     }
 
     public SimpleHeap getEden() {
@@ -49,7 +47,7 @@ public class GenerationHeap implements Heap {
      * {@inheritDoc}
      */
     @Override
-    public StackValue allocObject(InterpretedClass objectClass) throws HeapOverflow {
+    public StackValue allocObject(InterpretedClass objectClass) throws HeapOverflowException {
         return alloc(new Object(objectClass));
     }
 
@@ -57,20 +55,18 @@ public class GenerationHeap implements Heap {
      * {@inheritDoc}
      */
     @Override
-    public StackValue allocArray(int size) throws HeapOverflow {
+    public StackValue allocArray(int size) throws HeapOverflowException {
         return alloc(new Array(size));
     }
 
-    public StackValue alloc(HeapItem obj) throws HeapOverflow {
+    public StackValue alloc(HeapItem obj) throws HeapOverflowException {
         try {
             return eden.alloc(obj);
-        } catch (HeapOverflow heapOverflow) {
+        } catch (HeapOverflowException heapOverflow) {
+            // TO DO log?
+            // If heap overflow, run collector, and then try alloc
             garbageCollector.run(null);
-
-            //Try again
-            StackValue ref = eden.alloc(obj);
-
-            return ref;
+            return eden.alloc(obj);
         }
     }
 
@@ -80,7 +76,6 @@ public class GenerationHeap implements Heap {
     @Override
     public Array loadArray(StackValue reference) {
         HeapItem obj = load(reference);
-
         if (obj == null) {
             throw new NullPointerException();
         }
@@ -98,7 +93,6 @@ public class GenerationHeap implements Heap {
     @Override
     public Object loadObject(StackValue reference) {
         HeapItem obj = load(reference);
-
         if (obj == null) {
             throw new NullPointerException();
         }
@@ -119,12 +113,7 @@ public class GenerationHeap implements Heap {
      */
     @Override
     public HeapItem load(StackValue reference) {
-
-        if (isEdenReference(reference)) {
-            return eden.load(reference);
-        } else {
-            return tenure.load(reference);
-        }
+        return isEdenReference(reference) ? eden.load(reference) : tenure.load(reference);
     }
 
     /**
@@ -176,8 +165,8 @@ public class GenerationHeap implements Heap {
         StackValue[] all = new StackValue[edenLen + tenureLen];
         System.arraycopy(edenAllocated, 0, all, 0, edenLen);
         System.arraycopy(tenureAllocated, 0, all, edenLen, tenureLen);
+        
         return all;
-
     }
 
     /**

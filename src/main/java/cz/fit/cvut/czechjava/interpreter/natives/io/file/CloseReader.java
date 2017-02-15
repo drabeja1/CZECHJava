@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.interpreter.natives.io.file;
 
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
-import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.natives.Native;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
 
@@ -23,7 +23,7 @@ public class CloseReader extends Native {
      * {@inheritDoc}
      */
     @Override
-    public StackValue invoke(StackValue[] args) throws HeapOverflow, InterpreterException {
+    public StackValue invoke(StackValue[] args) throws HeapOverflowException, InterpreterException {
         int handle = args[0].intValue();
 
         BufferedReader br = Readers.getInstance().get(handle);

@@ -1,8 +1,8 @@
 package cz.fit.cvut.czechjava.interpreter;
 
 import cz.fit.cvut.czechjava.interpreter.exceptions.LookupException;
-import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.compiler.model.Class;
+import cz.fit.cvut.czechjava.utilities.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ClassPool {
 
         // Find super class
         for (InterpretedClass ic : this.classes) {
-            if (ic.getSuperName() != null && ic.getSuperName().length() > 0) {
+            if (!StringUtils.isNullOrEmpty(ic.getSuperName())) {
                 ic.setSuperClass(lookupClass(ic.getSuperName()));
             }
         }
@@ -31,19 +31,17 @@ public class ClassPool {
 
     public final InterpretedClass lookupClass(String name) throws LookupException {
         String lowercase = name.toLowerCase();
-
         for (InterpretedClass c : classes) {
             if (c.getClassName().equals(lowercase)) {
                 return c;
             }
         }
-
         throw new LookupException("Class '" + name + "' not found");
     }
 
-    public InterpretedClass getClass(int address) throws InterpreterException {
-        if (classes.size() < address) {
-            throw new InterpreterException("Couldn't find class with address " + address);
+    public InterpretedClass getClass(int address) {
+        if (0 > address || classes.size() < address) {
+            throw new IllegalArgumentException("Couldn't find class with address " + address);
         }
         return classes.get(address);
     }

@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.interpreter.natives;
 
 import cz.fit.cvut.czechjava.compiler.model.Method;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
-import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.natives.array.CharArraySize;
 import cz.fit.cvut.czechjava.interpreter.natives.array.IntArraySize;
 import cz.fit.cvut.czechjava.interpreter.natives.array.ReferenceArraySize;
@@ -13,7 +13,6 @@ import cz.fit.cvut.czechjava.interpreter.natives.io.file.OpenReader;
 import cz.fit.cvut.czechjava.interpreter.natives.io.file.ReadLine;
 import cz.fit.cvut.czechjava.interpreter.natives.math.LogInt;
 import cz.fit.cvut.czechjava.interpreter.natives.math.PowInt;
-import cz.fit.cvut.czechjava.type.Type;
 import cz.fit.cvut.czechjava.type.Types;
 import cz.fit.cvut.czechjava.compiler.model.Class;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
@@ -26,10 +25,7 @@ import cz.fit.cvut.czechjava.interpreter.natives.io.console.PrintFloat;
 import cz.fit.cvut.czechjava.interpreter.natives.io.console.PrintInt;
 import cz.fit.cvut.czechjava.interpreter.StackValue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -85,7 +81,7 @@ public class Natives {
         }
     }
 
-    public StackValue invoke(String descriptor, StackValue[] args) throws InterpreterException, HeapOverflow {
+    public StackValue invoke(String descriptor, StackValue[] args) throws InterpreterException, HeapOverflowException {
         try {
             Method method = nativeClass.lookupMethod(descriptor, classPool);
             return nativesMap.get(method.getDescriptor()).invoke(args);

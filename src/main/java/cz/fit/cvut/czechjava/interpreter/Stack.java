@@ -9,7 +9,7 @@ import cz.fit.cvut.czechjava.compiler.model.Method;
  */
 public class Stack {
 
-    protected Frame[] frames;
+    protected final Frame[] frames;
     protected int framesNumber = 0;
     protected int frameStackSize;
 
@@ -37,7 +37,7 @@ public class Stack {
     public Frame[] getFrames() {
         return frames;
     }
-    
+
     public int getFramesNumber() {
         return framesNumber;
     }
@@ -57,13 +57,15 @@ public class Stack {
     public String stackTrace() {
         StringBuilder sb = new StringBuilder();
         for (int i = framesNumber - 1; i >= 0; i--) {
-            Frame frame = frames[i];
-            sb.append(frame.getMethodName()).append("()\n");
+            sb.append(frames[i].getMethodName())
+                    .append("()\n");
         }
-
         return sb.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return stackTrace();

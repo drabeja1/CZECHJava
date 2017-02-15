@@ -11,7 +11,7 @@ import java.util.Map;
 public class Readers {
 
     private static Readers instance = null;
-    Map<Integer, BufferedReader> readers;
+    private final Map<Integer, BufferedReader> readers;
     int lastAddress = 0;
 
     protected Readers() {
@@ -29,7 +29,6 @@ public class Readers {
         int address = lastAddress;
         readers.put(address, reader);
         lastAddress++;
-
         return address;
     }
 

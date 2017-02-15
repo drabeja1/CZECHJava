@@ -20,7 +20,7 @@ public abstract class HeapItem extends ByteArrayWrapper {
     }
 
     public State getGCState() {
-        return (byteArray[0] == 1) ? State.Live : State.Dead;
+        return byteArray[0] == 1 ? State.Live : State.Dead;
     }
 
     /**

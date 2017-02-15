@@ -14,11 +14,9 @@ public class Array extends HeapItem {
     private final int capacity;
 
     public Array(int size) {
-
         this.capacity = size;
-        byteArray = new byte[HEADER_SIZE + size * ITEM_SIZE];
-
-        this.setGCState(State.Dead);
+        this.byteArray = new byte[HEADER_SIZE + size * ITEM_SIZE];
+        setGCState(State.Dead);
     }
 
     public StackValue get(int index) {
@@ -32,7 +30,6 @@ public class Array extends HeapItem {
         if (index > capacity - 1) {
             throw new IndexOutOfBoundsException();
         }
-
         setBytes(HEADER_SIZE + index * ITEM_SIZE, value.getBytes());
     }
 
@@ -46,13 +43,10 @@ public class Array extends HeapItem {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
         sb.append(super.toString()).append("\n");
-
         for (int i = 0; i < capacity; i++) {
             sb.append(get(i)).append(" ");
         }
-
         return sb.toString();
     }
 }

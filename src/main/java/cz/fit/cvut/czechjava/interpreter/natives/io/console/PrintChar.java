@@ -16,11 +16,12 @@ public class PrintChar extends Native {
 
     /**
      * {@inheritDoc}
+     * 
+     * @return {@code null}
      */
     @Override
     public StackValue invoke(StackValue[] args) {
-        StackValue arg = args[0];
-        char value = arg.charValue();
+        char value = args[0].charValue();
         System.out.println(value);
         return null;
     }

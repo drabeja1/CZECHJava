@@ -1,7 +1,5 @@
 package cz.fit.cvut.czechjava.compiler.model;
 
-import cz.fit.cvut.czechjava.compiler.model.Instruction;
-import cz.fit.cvut.czechjava.compiler.model.Method;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
 import cz.fit.cvut.czechjava.interpreter.InterpretedClass;
 
@@ -16,10 +14,9 @@ import java.util.Set;
  */
 public class ConstantPool {
 
-    Set<String> constants;
+    public Set<String> constants;
 
     public ConstantPool() {
-        super();
         constants = new LinkedHashSet<>();
     }
 
@@ -30,11 +27,10 @@ public class ConstantPool {
         // Go through all classes and methods and get constants
         for (InterpretedClass c : classPool.getClasses()) {
             for (Method method : c.getMethods()) {
-
                 List<Instruction> instructions = method.getByteCode().getInstructions();
                 ConstantPool pool = c.getConstantPool();
 
-                //We have to change constants positions
+                // We have to change constants positions
                 for (Instruction inst : instructions) {
                     switch (inst.getInstruction()) {
                         case PushConstant:

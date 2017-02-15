@@ -67,7 +67,7 @@ public class Debugger {
             InterpretedClass clazz = obj.loadClass(classPool);
             int fieldPos = clazz.lookupField("pismneka");
             StackValue ref = obj.getField(fieldPos);
-            char[] str = Converter.arrayToCharArray(heap.loadArray(ref));
+            char[] str = TypeConverter.arrayToCharArray(heap.loadArray(ref));
             System.out.println("{" + clazz.getClassName() + "} = '" + new String(str) + "'");
 
         } catch (LookupException | InterpreterException e) {

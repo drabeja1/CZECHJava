@@ -15,7 +15,7 @@ import cz.fit.cvut.czechjava.type.Type;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.impl.GenerationCollector;
 import cz.fit.cvut.czechjava.interpreter.memory.GenerationHeap;
-import cz.fit.cvut.czechjava.interpreter.memory.HeapOverflow;
+import cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException;
 import cz.fit.cvut.czechjava.interpreter.memory.Object;
 import cz.fit.cvut.czechjava.interpreter.natives.Natives;
 import cz.fit.cvut.czechjava.type.ArrayType;
@@ -52,14 +52,12 @@ public class CZECHJavaInterpreter extends RootNode {
         this.arguments = arguments;
         this.stack = new Stack(frameNumber, stackSize);
         this.classPool = new ClassPool(compiledClasses);
-
         this.heap = new GenerationHeap((int) (heapSize * 0.1), (int) (heapSize * 0.9), stack);
-        GenerationCollector gc = new GenerationCollector(stack, heap);
-        this.heap.setGarbageCollector(gc);
-
+        this.heap.setGarbageCollector(new GenerationCollector(stack, heap));
         this.instructions = new Instructions(classPool);
         this.constantPool = new ConstantPool(classPool);
         this.natives = new Natives(this.heap, classPool);
+
         Debugger.init(heap, classPool, constantPool);
     }
 
@@ -71,7 +69,7 @@ public class CZECHJavaInterpreter extends RootNode {
     public Object execute(VirtualFrame frame) {
         try {
             run(arguments);
-        } catch (InterpreterException | HeapOverflow ex) {
+        } catch (InterpreterException | HeapOverflowException ex) {
             LOGGER.fatal(ex);
             throw new RuntimeException(ex);
         }
@@ -79,7 +77,7 @@ public class CZECHJavaInterpreter extends RootNode {
         return null;
     }
 
-    public void run(List<String> arguments) throws InterpreterException, HeapOverflow {
+    public void run(List<String> arguments) throws InterpreterException, HeapOverflowException {
         InterpretedClass mainClass = null;
         Method mainMethod = null;
 
@@ -102,32 +100,60 @@ public class CZECHJavaInterpreter extends RootNode {
         }
 
         StackValue objectPointer = heap.allocObject(mainClass);
-
-        //Create new frame for main method
+        // Create new frame for main method
         stack.newFrame(END_RETURN_ADDRESS, objectPointer, mainMethod);
 
-        //Pushing arguments to the main method local variables
+        // Pushing arguments to the main method local variables
         pushArguments(stack.currentFrame(), mainMethod, arguments);
 
-        //Find instructions for main method
+        // Find instructions for main method
         int mainMethodPosition = ((InterpretedMethod) mainMethod).getInstructionPosition();
         interpret(mainMethodPosition);
     }
 
-    public void interpret(int startingPosition) throws InterpreterException, HeapOverflow {
+    public void interpret(int startingPosition) throws InterpreterException, HeapOverflowException {
         instructions.goTo(startingPosition);
-
         Iterator<Instruction> itr = instructions.getIterator();
 
-        //Move from one instruction to next
+        // Move from one instruction to next
         while (itr.hasNext()) {
             Instruction instruction = itr.next();
             executeInstruction(instruction, stack);
         }
     }
 
-    public void executeInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflow {
+    protected void pushArguments(Frame frame, Method mainMethod, List<String> arguments) throws HeapOverflowException, InterpreterException {
+        List<Type> args = mainMethod.getArgs();
+        int i = 0;
+        for (Type argType : args) {
+            if (i >= arguments.size()) {
+                break;
+            }
 
+            StackValue argValue = null;
+            String stringArgValue = arguments.get(i);
+
+            // Main method can get either number, char array or float as argument
+            // It depends on type of arguments in the main method
+            if (argType == Types.Number()) {
+                argValue = new StackValue(Integer.parseInt(stringArgValue), StackValue.Type.Primitive);
+            } else if (argType == Types.Float()) {
+                argValue = new StackValue(Float.parseFloat(stringArgValue));
+            } else if (argType == Types.CharArray()) {
+                Array array = TypeConverter.charArrayToArray(stringArgValue.toCharArray());
+                argValue = heap.alloc(array);
+            } else {
+                throw new InterpreterException("Unsupported argument type '" + argType + "' in " + mainMethod);
+            }
+
+            // 0 reserved for this
+            frame.storeVariable(i + 1, argValue);
+            i++;
+        }
+    }
+
+    // INSTRUCTIONS EXECUTION
+    public void executeInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflowException {
         switch (instruction.getInstruction()) {
             case PushInteger:
             case PushFloat:
@@ -196,7 +222,7 @@ public class CZECHJavaInterpreter extends RootNode {
                 executeFieldInstruction(instruction, stack);
                 break;
             case Breakpoint:
-                //Place breakpoint here
+                // Place breakpoint here
                 break;
             case PushConstant:
                 executeStringInstruction(instruction, stack);
@@ -218,11 +244,10 @@ public class CZECHJavaInterpreter extends RootNode {
 
     }
 
-    public void executeArrayInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflow {
+    public void executeArrayInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflowException {
         switch (instruction.getInstruction()) {
             case NewArray:
                 int size = stack.currentFrame().pop().intValue();
-
                 StackValue reference = heap.allocArray(size);
                 stack.currentFrame().push(reference);
                 break;
@@ -244,35 +269,32 @@ public class CZECHJavaInterpreter extends RootNode {
             case LoadReferenceArray: {
                 int index = stack.currentFrame().pop().intValue();
                 StackValue arrayRef = stack.currentFrame().pop();
-
                 Array array = heap.loadArray(arrayRef);
                 StackValue value = array.get(index);
                 stack.currentFrame().push(value);
-
             }
             break;
         }
     }
 
-    public void executeStringInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflow {
+    public void executeStringInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflowException {
         int constPosition = instruction.getOperand(0);
         String constant = constantPool.getConstant(constPosition);
         // Create array of chars and push it on stack
-        Array charArray = Converter.charArrayToArray(constant.toCharArray());
+        Array charArray = TypeConverter.charArrayToArray(constant.toCharArray());
         StackValue reference = heap.alloc(charArray);
 
         stack.currentFrame().push(reference);
     }
 
-    public void executeNewInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflow {
+    public void executeNewInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflowException {
         int constPosition = instruction.getOperand(0);
         String className = constantPool.getConstant(constPosition);
+
         try {
             InterpretedClass objectClass = classPool.lookupClass(className);
-
             StackValue reference = heap.allocObject(objectClass);
             stack.currentFrame().push(reference);
-
         } catch (LookupException e) {
             LOGGER.fatal(e);
             throw new InterpreterException("Trying to instantiate non-existent class '" + className + "'");
@@ -281,7 +303,6 @@ public class CZECHJavaInterpreter extends RootNode {
 
     public void executeDuplicateInstruction(Instruction instruction, Stack stack) throws InterpreterException {
         StackValue value = stack.currentFrame().pop();
-
         stack.currentFrame().push(value);
         stack.currentFrame().push(value);
     }
@@ -289,76 +310,66 @@ public class CZECHJavaInterpreter extends RootNode {
     public void executeFieldInstruction(Instruction instruction, Stack stack) throws InterpreterException {
         StackValue value = null;
 
-        //If we are setting we must first pop the value
+        // If we are setting we must first pop the value
         if (instruction.getInstruction() == InstructionSet.PutField) {
             value = stack.currentFrame().pop();
         }
 
-        //Get object and find the field
+        // Get object and find the field
         StackValue reference = stack.currentFrame().pop();
-
         int constPosition = instruction.getOperand(0);
         String fieldName = constantPool.getConstant(constPosition);
-
         cz.fit.cvut.czechjava.interpreter.memory.Object object = heap.loadObject(reference);
 
         InterpretedClass objectClass = object.loadClass(classPool);
         try {
             int fieldPosition = objectClass.lookupField(fieldName);
-
             switch (instruction.getInstruction()) {
                 case GetField:
                     stack.currentFrame().push(object.getField(fieldPosition));
                     break;
-
                 case PutField:
                     heap.addDirtyLink(reference, value);
-
                     object.setField(fieldPosition, value);
                     break;
             }
-
         } catch (LookupException e) {
             throw new InterpreterException("Trying to access non-existent field '" + fieldName + "'");
         }
     }
 
-    public void executeInvokeInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflow {
+    public void executeInvokeInstruction(Instruction instruction, Stack stack) throws InterpreterException, HeapOverflowException {
         InstructionSet inst = instruction.getInstruction();
-
         int constPosition = instruction.getOperand(0);
         String methodDescriptor = constantPool.getConstant(constPosition);
-
         StackValue objectRef;
 
         try {
-
             objectRef = stack.currentFrame().pop();
             InterpretedClass objectClass;
 
             if (inst == InstructionSet.InvokeVirtual) {
-                //Get class from the actual object on heap
+                // Get class from the actual object on heap
                 Object object = heap.loadObject(objectRef);
                 objectClass = object.loadClass(classPool);
-                //Static & special
+                // Static & special
             } else {
-                //Get class from descriptor
+                // Get class from descriptor
                 String className = new Method(methodDescriptor).getClassName();
                 objectClass = classPool.lookupClass(className);
             }
 
-            //Lookup real interpreted method
+            // Lookup real interpreted method
             InterpretedMethod method = objectClass.lookupMethod(methodDescriptor, classPool);
-
             if (method.isNativeMethod()) {
                 invokeNative(methodDescriptor);
                 return;
             }
 
-            //Return to next instruction
+            // Return to next instruction
             int returnAddress = instructions.getCurrentPosition() + 1;
 
-            //Pop arguments from the caller stack
+            // Pop arguments from the caller stack
             int numberOfArgs = method.getArgs().size();
             StackValue[] argValues = new StackValue[numberOfArgs];
 
@@ -368,58 +379,48 @@ public class CZECHJavaInterpreter extends RootNode {
 
             stack.newFrame(returnAddress, objectRef, method);
 
-            //Store arguments as variables in callee stack
+            // Store arguments as variables in callee stack
             for (int i = 0; i < numberOfArgs; i++) {
-                //Start with 1 index, 0 is reserved for This
+                // Start with 1 index, 0 is reserved for This
                 stack.currentFrame().storeVariable(i + 1, argValues[i]);
             }
 
-            //Go to the method bytecode start
+            // Go to the method bytecode start
             instructions.goTo(((InterpretedMethod) method).getInstructionPosition());
-
         } catch (LookupException e) {
             throw new InterpreterException("Trying to call non-existent method '" + methodDescriptor + "'");
         }
-
     }
 
-    public void invokeNative(String methodDescriptor) throws InterpreterException, HeapOverflow {
+    public void invokeNative(String methodDescriptor) throws InterpreterException, HeapOverflowException {
         if (!natives.nativeExist(methodDescriptor)) {
             throw new InterpreterException("Trying to call non-existent method '" + methodDescriptor + "'");
         }
 
-        //Load approximate method from descriptor so we can count the arguments
+        // Load approximate method from descriptor so we can count the arguments
         Method methodFromDescriptor = new Method(methodDescriptor);
-
         int numberOfArgs = methodFromDescriptor.getArgs().size();
-
         StackValue[] argValues = new StackValue[numberOfArgs];
 
         for (int i = 0; i < methodFromDescriptor.getArgs().size(); i++) {
             Type type = methodFromDescriptor.getArgs().get(i);
 
             if (type instanceof ArrayType || type == Types.Number() || type == Types.Char() || type == Types.Boolean() || type == Types.Float()) {
-
                 StackValue value = stack.currentFrame().pop();
                 argValues[i] = value;
-
             } else {
                 throw new InterpreterException("Passing " + type + " in native functions is not supported");
             }
-
         }
 
         StackValue returnValue = natives.invoke(methodDescriptor, argValues);
-
         if (returnValue != null) {
             stack.currentFrame().push(returnValue);
         }
     }
 
     public void executeReturnInstruction(Instruction instruction, Stack stack) throws InterpreterException {
-
         int returnAddress = stack.currentFrame().getReturnAddress();
-
         switch (instruction.getInstruction()) {
             case ReturnVoid:
                 stack.deleteCurrentFrame();
@@ -427,16 +428,13 @@ public class CZECHJavaInterpreter extends RootNode {
             case ReturnInteger:
             case ReturnReference: {
                 StackValue var = stack.currentFrame().pop();
-
-                //Remove current frame
+                // Remove current frame
                 stack.deleteCurrentFrame();
-
-                //Push return value on the calling frame
+                // Push return value on the calling frame
                 stack.currentFrame().push(var);
             }
             break;
         }
-
         instructions.goTo(returnAddress);
     }
 
@@ -467,17 +465,12 @@ public class CZECHJavaInterpreter extends RootNode {
                 stack.currentFrame().push(var);
             }
             break;
-
             case StoreReference: {
-
                 StackValue var = stack.currentFrame().pop();
-
-                //Convert int to reference
                 StackValue reference = new StackValue(var.intValue(), StackValue.Type.Pointer);
                 stack.currentFrame().storeVariable(instruction.getOperand(0), reference);
             }
             break;
-
         }
     }
 
@@ -487,7 +480,6 @@ public class CZECHJavaInterpreter extends RootNode {
         int result = 0;
 
         switch (instruction.getInstruction()) {
-
             case AddInteger:
                 result = a + b;
                 break;
@@ -498,14 +490,12 @@ public class CZECHJavaInterpreter extends RootNode {
                 result = a * b;
                 break;
             case DivideInteger:
-
                 if (b == 0) {
                     throw new InterpreterException("Division by zero");
                 }
                 result = a / b;
                 break;
             case ModuloInteger:
-
                 result = a % b;
                 break;
         }
@@ -519,7 +509,6 @@ public class CZECHJavaInterpreter extends RootNode {
         float result = 0;
 
         switch (instruction.getInstruction()) {
-
             case AddFloat:
                 result = a + b;
                 break;
@@ -530,14 +519,12 @@ public class CZECHJavaInterpreter extends RootNode {
                 result = a * b;
                 break;
             case DivideFloat:
-
                 if (b == 0) {
                     throw new InterpreterException("Division by zero");
                 }
                 result = a / b;
                 break;
             case ModuloFloat:
-
                 result = a % b;
                 break;
         }
@@ -548,9 +535,7 @@ public class CZECHJavaInterpreter extends RootNode {
     public void executeIntegerCompareInstruction(Instruction instruction, Stack stack) throws InterpreterException {
         int b = stack.currentFrame().pop().intValue();
         int a = stack.currentFrame().pop().intValue();
-
         int operand = instruction.getOperand(0);
-
         boolean condition = false;
 
         switch (instruction.getInstruction()) {
@@ -581,9 +566,7 @@ public class CZECHJavaInterpreter extends RootNode {
 
     public void executeZeroCompareInstruction(Instruction instruction, Stack stack) throws InterpreterException {
         int a = stack.currentFrame().pop().intValue();
-
         int operand = instruction.getOperand(0);
-
         boolean condition = false;
 
         switch (instruction.getInstruction()) {
@@ -636,12 +619,11 @@ public class CZECHJavaInterpreter extends RootNode {
         switch (instruction.getInstruction()) {
             case FloatToInteger:
                 float floatValue = value.floatValue();
-                convertedValue = new StackValue(Converter.floatToInt(floatValue), StackValue.Type.Primitive);
-
+                convertedValue = new StackValue(TypeConverter.floatToInt(floatValue), StackValue.Type.Primitive);
                 break;
             case IntegerToFloat:
                 int intValue = value.intValue();
-                convertedValue = new StackValue(Converter.intToFloat(intValue));
+                convertedValue = new StackValue(TypeConverter.intToFloat(intValue));
                 break;
         }
 
@@ -649,39 +631,7 @@ public class CZECHJavaInterpreter extends RootNode {
     }
 
     public void executeGoToInstruction(Instruction instruction, Stack stack) throws InterpreterException {
-
         int jumpTo = instruction.getOperand(0);
         instructions.goTo(jumpTo);
-    }
-
-    protected void pushArguments(Frame frame, Method mainMethod, List<String> arguments) throws HeapOverflow, InterpreterException {
-        List<Type> args = mainMethod.getArgs();
-        int i = 0;
-        for (Type argType : args) {
-            if (i >= arguments.size()) {
-                break;
-            }
-
-            StackValue argValue = null;
-            String stringArgValue = arguments.get(i);
-
-            //Main method can get either number, char array or float as argument
-            //It depends on type of arguments in the main method
-            if (argType == Types.Number()) {
-                argValue = new StackValue(Integer.parseInt(stringArgValue), StackValue.Type.Primitive);
-            } else if (argType == Types.Float()) {
-                argValue = new StackValue(Float.parseFloat(stringArgValue));
-            } else if (argType == Types.CharArray()) {
-                Array array = Converter.charArrayToArray(stringArgValue.toCharArray());
-                argValue = heap.alloc(array);
-            } else {
-                throw new InterpreterException("Unsupported argument type '" + argType + "' in " + mainMethod);
-            }
-
-            //0 reserved for this
-            frame.storeVariable(i + 1, argValue);
-            i++;
-        }
-
     }
 }

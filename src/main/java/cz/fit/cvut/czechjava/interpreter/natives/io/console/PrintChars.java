@@ -1,6 +1,6 @@
 package cz.fit.cvut.czechjava.interpreter.natives.io.console;
 
-import cz.fit.cvut.czechjava.interpreter.Converter;
+import cz.fit.cvut.czechjava.interpreter.TypeConverter;
 import cz.fit.cvut.czechjava.interpreter.memory.Array;
 import cz.fit.cvut.czechjava.interpreter.memory.Heap;
 import cz.fit.cvut.czechjava.interpreter.natives.Native;
@@ -18,15 +18,13 @@ public class PrintChars extends Native {
 
     /**
      * {@inheritDoc}
+     * 
+     * @return {@code null}
      */
     @Override
     public StackValue invoke(StackValue args[]) {
-        StackValue ref = args[0];
-
-        Array array = heap.loadArray(ref);
-        char[] chars = Converter.arrayToCharArray(array);
-
-        System.out.println(chars);
+        Array array = heap.loadArray(args[0]);
+        System.out.println(TypeConverter.arrayToCharArray(array));
         return null;
     }
 }

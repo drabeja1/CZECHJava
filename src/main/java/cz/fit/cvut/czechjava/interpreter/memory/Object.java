@@ -2,7 +2,7 @@ package cz.fit.cvut.czechjava.interpreter.memory;
 
 import cz.fit.cvut.czechjava.compiler.model.Field;
 import cz.fit.cvut.czechjava.interpreter.ClassPool;
-import cz.fit.cvut.czechjava.interpreter.Converter;
+import cz.fit.cvut.czechjava.interpreter.TypeConverter;
 import cz.fit.cvut.czechjava.interpreter.InterpretedClass;
 import cz.fit.cvut.czechjava.interpreter.exceptions.InterpreterException;
 import cz.fit.cvut.czechjava.interpreter.memory.garbagecollector.State;
@@ -16,36 +16,30 @@ import java.util.Set;
  */
 public class Object extends HeapItem {
 
-    final int OBJECT_FIELD_SIZE = 4;
-    final int OBJECT_CLASS_ADDRESS_SIZE = 4;
-    final int OBJECT_SIZE_TYPE = 4;
-
-    final int OBJECT_HEADER_SIZE = GC_STATE_SIZE + OBJECT_CLASS_ADDRESS_SIZE + OBJECT_SIZE_TYPE;
+    private final static int OBJECT_FIELD_SIZE = 4;
+    private final static int OBJECT_CLASS_ADDRESS_SIZE = 4;
+    private final static int OBJECT_SIZE_TYPE = 4;
+    private static final int OBJECT_HEADER_SIZE = GC_STATE_SIZE + OBJECT_CLASS_ADDRESS_SIZE + OBJECT_SIZE_TYPE;
 
     public Object(InterpretedClass objectClass) {
-
         Set<Field> fieldList = objectClass.getAllFields();
         int numberOfFields = fieldList.size();
-
         int size = OBJECT_HEADER_SIZE + OBJECT_FIELD_SIZE * numberOfFields;
 
         byteArray = new byte[size];
-
-        //Set class address
-        setBytes(GC_STATE_SIZE, Converter.intToByteArray(objectClass.getClassPoolAddress()));
-
-        //Set size
-        setBytes(GC_STATE_SIZE + OBJECT_CLASS_ADDRESS_SIZE, Converter.intToByteArray(size));
-
+        // set class address
+        setBytes(GC_STATE_SIZE, TypeConverter.intToByteArray(objectClass.getClassPoolAddress()));
+        //S et size
+        setBytes(GC_STATE_SIZE + OBJECT_CLASS_ADDRESS_SIZE, TypeConverter.intToByteArray(size));
         this.setGCState(State.Dead);
     }
 
     protected int getClassAddress() {
-        return Converter.byteArrayToInt(getBytes(GC_STATE_SIZE));
+        return TypeConverter.byteArrayToInt(getBytes(GC_STATE_SIZE));
     }
 
     protected int getSize() {
-        return Converter.byteArrayToInt(getBytes(GC_STATE_SIZE + OBJECT_CLASS_ADDRESS_SIZE));
+        return TypeConverter.byteArrayToInt(getBytes(GC_STATE_SIZE + OBJECT_CLASS_ADDRESS_SIZE));
     }
 
     protected int getFieldsSize() {
@@ -68,10 +62,12 @@ public class Object extends HeapItem {
         return pool.getClass(getClassAddress());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
         sb.append(super.toString())
                 .append("\n")
                 .append("Class: ")
@@ -84,7 +80,6 @@ public class Object extends HeapItem {
         for (int i = 0; i < getFieldsNumber(); i++) {
             sb.append(getField(i)).append(" ");
         }
-
         return sb.toString();
     }
 }

@@ -31,12 +31,12 @@ import org.apache.log4j.Logger;
  *
  * @author Jakub
  */
-public class Compile {
+public class Compiler {
 
     /**
      * Logger
      */
-    private static final Logger LOGGER = Logger.getLogger(Compile.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Compiler.class.getName());
 
     /**
      * Prepare arguments options
@@ -63,7 +63,7 @@ public class Compile {
      */
     public static void exec(String[] args) throws Exception {
         // perform args
-        CommandLineParser parser = new DefaultParser();
+        CommandLineParser cmdParser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         Options options = prepareOptions();
 
@@ -71,7 +71,7 @@ public class Compile {
         String outputDirectory = "./";
 
         try {
-            CommandLine cmd = parser.parse(options, args);
+            CommandLine cmd = cmdParser.parse(options, args);
             filenames.addAll(Arrays.asList(cmd.getOptionValues("source")));
 
             if (cmd.hasOption("target")) {
@@ -87,19 +87,17 @@ public class Compile {
         filenames.add(Globals.SOURCE_LIBRARIES_DIRECTORY);
 
         List<Node> rootNodeList = parse(filenames);
-
         List<Class> classList = new ArrayList<>();
         CZECHJavaCompiler compiler = new CZECHJavaCompiler();
 
         try {
-            // First stage - PRECOMPULATION
+            // PRECOMPULATION
             for (Node node : rootNodeList) {
                 classList.addAll(compiler.precompile(node));
             }
 
-            // Second stage - COMPILATION
+            // COMPILATION
             ClassPool classPool = new ClassPool(classList);
-
             classList.clear();
 
             for (Node node : rootNodeList) {

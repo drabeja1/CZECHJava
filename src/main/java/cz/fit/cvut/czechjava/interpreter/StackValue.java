@@ -6,15 +6,18 @@ package cz.fit.cvut.czechjava.interpreter;
  */
 public class StackValue extends ByteArrayWrapper {
 
+    /**
+     * Stack value types
+     */
     public enum Type {
         Primitive,
         Pointer;
     }
 
-    final int POINTER_LAST_BIT = 1;
-    final int FLOAT_BIAS = 127;
-    final int REDUCED_FLOAT_BIAS = 63;
-    final int MANTISA_SIZE = 23;
+    private final int POINTER_LAST_BIT = 1;
+    private final int FLOAT_BIAS = 127;
+    private final int REDUCED_FLOAT_BIAS = 63;
+    private final int MANTISA_SIZE = 23;
 
     public static final int SIZE = 4;
 
@@ -27,7 +30,7 @@ public class StackValue extends ByteArrayWrapper {
     }
 
     public StackValue(String floatString) {
-        this(Converter.stringToFloat(floatString));
+        this(TypeConverter.stringToFloat(floatString));
     }
 
     public StackValue(Float floatNumber) {
@@ -38,24 +41,22 @@ public class StackValue extends ByteArrayWrapper {
     protected final byte[] integerToInnerRepresentation(int i, Type type) {
         int lastBit = (type == Type.Pointer) ? POINTER_LAST_BIT : 0;
         int pointer = i << 1 | lastBit;
-        return Converter.intToByteArray(pointer);
+        return TypeConverter.intToByteArray(pointer);
     }
 
     // Shifts float by 1, but has to reduce exponent to make space in float
     protected final byte[] floatToInnerRepresentation(float f) {
-        byte[] bytes = Converter.floatToByteArray(f);
-
-        int i = Converter.byteArrayToInt(bytes);
+        byte[] bytes = TypeConverter.floatToByteArray(f);
+        int i = TypeConverter.byteArrayToInt(bytes);
 
         // last 23 bits
         int mantisa = (i & 0x7FFFFF);
-
         // 8 bits after mantisa
         int exponent = (i & 0x7F800000) >> MANTISA_SIZE;
-
+        
         // Make it unsigned
         exponent = exponent - FLOAT_BIAS + REDUCED_FLOAT_BIAS;
-
+        
         // If the exponent is too big, throw exception
         if (exponent >= 128 || exponent < 0) {
             throw new IllegalArgumentException("Float overflow");
@@ -66,19 +67,19 @@ public class StackValue extends ByteArrayWrapper {
         int sign = (i & 0x80000000) >> 1;
         int result = sign | exponent | mantisa;
 
-        return Converter.intToByteArray(result);
+        return TypeConverter.intToByteArray(result);
     }
 
     // Shifts bytes back
     public int innerRepresentationToIntValue() {
-        int i = Converter.byteArrayToInt(byteArray);
+        int i = TypeConverter.byteArrayToInt(byteArray);
         int value = i >> 1;
         return value;
     }
 
     public float innerRepresentationToFloat(byte[] bytes) {
 
-        int i = Converter.byteArrayToInt(bytes);
+        int i = TypeConverter.byteArrayToInt(bytes);
 
         // 23 bits
         int mantisa = (i & 0x7FFFFF);
@@ -91,7 +92,7 @@ public class StackValue extends ByteArrayWrapper {
         int sign = (i & 0x80000000) << 1;
         int result = sign | exponent | mantisa;
 
-        return Converter.byteArrayToFloat(Converter.intToByteArray(result));
+        return TypeConverter.byteArrayToFloat(TypeConverter.intToByteArray(result));
     }
 
     public boolean isPointer() {
@@ -131,7 +132,7 @@ public class StackValue extends ByteArrayWrapper {
         if (isPointer()) {
             sb.append("&");
         }
-        //We don't know what it is, so even if it's a float write int
+        // We don't know what it is, so even if it's a float write int
         sb.append(intValue());
         return sb.toString();
     }
@@ -141,12 +142,10 @@ public class StackValue extends ByteArrayWrapper {
      */
     @Override
     public boolean equals(Object obj) {
-
         if (obj instanceof StackValue) {
             StackValue value = (StackValue) obj;
             return this.hashCode() == value.hashCode();
         }
-
         return false;
     }
 
@@ -155,6 +154,6 @@ public class StackValue extends ByteArrayWrapper {
      */
     @Override
     public int hashCode() {
-        return Converter.byteArrayToInt(this.getBytes());
+        return TypeConverter.byteArrayToInt(this.getBytes());
     }
 }

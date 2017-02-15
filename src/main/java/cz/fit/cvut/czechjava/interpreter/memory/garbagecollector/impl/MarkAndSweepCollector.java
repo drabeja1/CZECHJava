@@ -26,12 +26,13 @@ public class MarkAndSweepCollector extends GarbageCollector {
         this.heap = heap;
     }
 
+    /**
+     * {@inheritDoc} 
+     */
     @Override
     public Set<StackValue> run(Set<StackValue> roots) {
-
         Set<StackValue> dirtyLinks = mark(roots);
         sweep();
-
         return dirtyLinks;
     }
 
@@ -51,7 +52,7 @@ public class MarkAndSweepCollector extends GarbageCollector {
         Set<StackValue> dirtyLinks = new HashSet<>();
 
         if (reference.isPointer() && !reference.isNullPointer()) {
-            //Reference is leading to different generation, don't follow, mark dirty link
+            // Reference is leading to different generation, don't follow, mark dirty link
             if (heap.referenceIsOutOfBounds(reference)) {
                 dirtyLinks.add(reference);
                 return dirtyLinks;
@@ -81,13 +82,10 @@ public class MarkAndSweepCollector extends GarbageCollector {
     }
 
     public void sweep() {
-
         LOGGER.info("Collected: ");
 
         for (int i = 0; i < heap.getSize(); i++) {
-
             StackValue reference = heap.indexToReference(i);
-
             HeapItem obj = heap.load(reference);
 
             if (obj != null) {
@@ -95,7 +93,7 @@ public class MarkAndSweepCollector extends GarbageCollector {
                     LOGGER.log(Level.INFO, "{0}, ", reference);
                     heap.dealloc(reference);
                 } else {
-                    //Reset all to dead state
+                    // Reset all to dead state
                     obj.setGCState(State.Dead);
                 }
             }

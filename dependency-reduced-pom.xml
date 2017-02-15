@@ -37,7 +37,7 @@
               <goal>one-jar</goal>
             </goals>
             <configuration>
-              <mainClass>cz.fit.cvut.czechjava.Compile</mainClass>
+              <mainClass>cz.fit.cvut.czechjava.Compiler</mainClass>
               <attachToBuild>true</attachToBuild>
               <classifier>onejar</classifier>
               <filename>czechjavac.jar</filename>
@@ -49,7 +49,7 @@
               <goal>one-jar</goal>
             </goals>
             <configuration>
-              <mainClass>cz.fit.cvut.czechjava.Run</mainClass>
+              <mainClass>cz.fit.cvut.czechjava.Interpreter</mainClass>
               <attachToBuild>true</attachToBuild>
               <classifier>onejar</classifier>
               <filename>czechjava.jar</filename>
