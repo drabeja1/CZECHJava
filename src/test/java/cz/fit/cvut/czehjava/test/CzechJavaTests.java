@@ -63,6 +63,23 @@ public class CzechJavaTests {
         String output = readOutput(pRun.getErrorStream());
         Assert.assertTrue(output.contains("java.lang.RuntimeException: cz.fit.cvut.czechjava.interpreter.exceptions.HeapOverflowException"));
     }
+    
+    /**
+     * Test na vyhozeni vyjimky pri preteceni cisla
+     * 
+     * @throws IOException 
+     * @throws java.lang.InterruptedException 
+     */
+    @Test
+    public void testCzecjJavaArithmeticException() throws IOException, InterruptedException {
+        Process pCompile = Runtime.getRuntime().exec("java -jar target/czechjavac.jar -s examples/Factorial/ -t compiled/");
+        pCompile.waitFor();
+
+        Process pRun = Runtime.getRuntime().exec("java -jar target/czechjava.jar -c compiled/ -a 15");
+        pRun.waitFor();
+        String output = readOutput(pRun.getErrorStream());
+        Assert.assertTrue(output.contains("ArithmeticException"));
+    }
 
     private String readOutput(InputStream stream) throws IOException {
         StringBuilder sb = new StringBuilder();
