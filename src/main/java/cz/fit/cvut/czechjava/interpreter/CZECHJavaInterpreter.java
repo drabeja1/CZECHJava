@@ -481,13 +481,13 @@ public class CZECHJavaInterpreter extends RootNode {
 
         switch (instruction.getInstruction()) {
             case AddInteger:
-                result = a + b;
+                result = Math.addExact(a, b);
                 break;
             case SubtractInteger:
-                result = a - b;
+                result = Math.subtractExact(a, b);
                 break;
             case MultiplyInteger:
-                result = a * b;
+                result = Math.multiplyExact(a, b);
                 break;
             case DivideInteger:
                 if (b == 0) {
