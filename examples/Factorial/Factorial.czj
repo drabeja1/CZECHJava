@@ -1,0 +1,26 @@
+startuj proved
+
+trida Udelatko {
+
+    provadej (pismenko [] vstup) {
+        plati (vstup == nictam) {
+            Konzole.vypis("Nevalidni vstup!") proved
+            vrat proved
+        }
+
+        necht HodnePismenek vstupFaktorial = vytvor HodnePismenek(vstup) proved
+        necht cislo n = CisloCele.preved(vstupFaktorial) proved
+        necht cislo fact = 1 proved
+        necht cislo i = 1 proved
+
+        opakuj (i <= n) {
+            fact = fact * i proved
+            i = i + 1 proved
+        }
+
+        Konzole.vypis("Faktorial je: ") proved
+        Konzole.vypis(fact) proved
+    }
+}
+
+konci proved

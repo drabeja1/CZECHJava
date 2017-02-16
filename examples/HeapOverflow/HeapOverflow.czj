@@ -1,0 +1,31 @@
+startuj proved
+
+trida Udelatko {
+
+    provadej () {
+        necht A a = nictam proved
+        necht A temp proved
+
+        necht cislo i = 0 proved
+        opakuj (i < 10000) {
+            temp = a proved
+            a = vytvor A() proved
+            a.prev = temp proved
+
+            i = i + 1 proved
+        }
+
+        a.print() proved
+        dechrobok proved
+    }
+}
+
+trida A {
+    necht A prev proved
+
+    print(){
+        Konzole.vypis("A") proved
+    }
+}
+
+konci proved
