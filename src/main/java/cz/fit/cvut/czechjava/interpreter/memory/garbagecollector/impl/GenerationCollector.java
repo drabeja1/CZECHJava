@@ -125,7 +125,7 @@ public class GenerationCollector extends GarbageCollector {
             HeapItem obj = heap.getEden().load(oldReference);
 
             if (obj != null) {
-                //Passing as reference, no need to deep copy
+                // Passing as reference, no need to deep copy
                 StackValue newReference = heap.getTenure().alloc(obj);
                 referenceMap[heap.getEden().referenceToIndex(oldReference)] = newReference;
                 LOGGER.info(oldReference + ", ");
@@ -152,8 +152,7 @@ public class GenerationCollector extends GarbageCollector {
             
             HeapItem heapObj = heap.getTenure().load(objRef);
             if (heapObj instanceof Object) {
-                Object obj = (Object) heapObj;
-                translateReferencesInObject(obj, referenceMap);
+                translateReferencesInObject((Object) heapObj, referenceMap);
             } else if (heapObj instanceof Array) {
                 translateReferencesInArray((Array) heapObj, referenceMap);
             }

@@ -20,6 +20,7 @@
             <groupId>com.oracle</groupId>
             <artifactId>truffle</artifactId>
             <version>0.6</version>
+            <type>jar</type>
         </dependency>
         <!-- LOGGER -->
         <dependency>

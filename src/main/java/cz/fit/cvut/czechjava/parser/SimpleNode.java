@@ -3,9 +3,10 @@
 package cz.fit.cvut.czechjava.parser;
 
 public
-class SimpleNode implements Node {
+class SimpleNode extends com.oracle.truffle.api.nodes.Node implements Node {
 
   protected Node parent;
+  @Children
   protected Node[] children;
   protected int id;
   protected Object value;

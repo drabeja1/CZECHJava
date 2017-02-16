@@ -1,9 +1,19 @@
 package cz.fit.cvut.czechjava.type;
 
+import com.oracle.truffle.api.dsl.TypeSystem;
 import cz.fit.cvut.czechjava.Globals;
 import java.util.HashMap;
 import java.util.Map;
 
+@TypeSystem({
+    BooleanType.class,
+    CharType.class,
+    FloatType.class,
+    NumberType.class,
+    StringType.class,
+    VoidType.class,
+    ArrayType.class
+})
 public class Types {
 
     private final static Map<String, Type> SINGLETONS = new HashMap<>();
