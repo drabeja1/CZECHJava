@@ -1,0 +1,20 @@
+startuj proved
+
+trida Udelatko {
+
+    provadej() {
+        necht Citac citac = vytvor Citac() proved
+        citac.otevri("resources/test.txt") proved
+        necht HodnePismenek radek = nictam proved
+
+        radek = citac.ctiRadek() proved
+        opakuj(radek != nictam) {
+            Konzole.vypis(radek) proved
+            radek = citac.ctiRadek() proved
+        }
+        citac.zavri() proved
+    }
+
+}
+
+konci proved
