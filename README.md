@@ -37,7 +37,7 @@ Hodnoty:
 Základní knihovna také obsahuje třídy:
 *	**HodnePismenek** – ekvivalent String,
 *	**Perpetummobile** – všechny třídy dědí implicitně od této (náhrada Object). Obsahuje metody **naHodnePismenek()** a **jsouStejny(Perpetummobile p)**, ekvivalenty pro toString() a equals(Object o)
-*	**CistSoubor** – čtení ze souboru
+*	**Citac** – čtení ze souboru
 *	**Konzole** – výpis do konzole
 *	**Bufr** – jednoduchý buffer na čtení písmenek
 
